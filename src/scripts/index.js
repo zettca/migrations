@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
-import * as queue from 'd3-queue';
-import * as topojson from 'topojson';
+import { queue } from 'd3-queue';
+import { mesh } from 'topojson';
 
 const K = 1000, M = 1000000;
 
@@ -36,12 +36,17 @@ const path = d3.geoPath().projection(projection);
 //svg.call(tip);
 
 queue()
-  .defer(d3.json, '../data/countries.json')
-  .defer(d3.tsv, '../data/population.tsv')
+  .defer(d3.json, 'public/data/countries.json')
+  .defer(d3.csv, 'public/data/population.tsv')
   .await(ready);
 
 function ready(error, data, population) {
   var populationById = {};
+
+  console.log(error);
+  
+  console.log(data);
+  console.log(population);
 
   population.forEach(function (d) { populationById[d.id] = +d.population; });
 
@@ -77,8 +82,8 @@ function ready(error, data, population) {
 
 
   svg.append('path')
-    .datum(topojson.mesh(data.features, (a, b) => a.id !== b.id))
-    //.datum(topojson.mesh(data.features, a, b) => a !== b))
+    .datum(mesh(data.features, (a, b) => a.id !== b.id))
+    //.datum(mesh(data.features, a, b) => a !== b))
     .attr('class', 'names')
     .attr('d', path);
 }
