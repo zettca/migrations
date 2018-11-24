@@ -1,3 +1,4 @@
+//const d3 = require('d3');
 const format = d3.format(',');
 
 // Set tooltips
@@ -8,7 +9,7 @@ const tip = d3.tip()
 
 const margin = { top: 20, right: 20, bottom: 30, left: 30 };
 const width = 800 - margin.left - margin.right;
-const height = 600 - margin.top - margin.bottom;
+const height = 500 - margin.top - margin.bottom;
 
 const color = d3.scaleThreshold()
   .domain([
@@ -36,7 +37,7 @@ const color = d3.scaleThreshold()
     'rgb(3,19,43)'
   ]);
 
-const svg = d3.select('body')
+const svg = d3.select('#choropleth')
   .append('svg')
   .attr('width', width)
   .attr('height', height)
@@ -44,26 +45,37 @@ const svg = d3.select('body')
   .attr('class', 'map');
 
 const projection = d3.geoMercator()
-  .scale(120)
-  .translate([width / 2, height / 1.5]);
+  .translate([width / 2, height / 2])
+  .scale((width - 1) / 2 / Math.PI);
 
 const path = d3.geoPath().projection(projection);
 
+const zoom = d3.zoom()
+  .scaleExtent([1, 8])
+  .on('zoom', zoomed);
+
 svg.call(tip);
+svg.call(zoom);
+
+const g = svg.append('g');
 
 queue()
-  .defer(d3.json, '/data/countries.json')
-  .defer(d3.tsv, '/data/population.tsv')
+  .defer(d3.json, './data/countries.json')
+  .defer(d3.tsv, './data/population.tsv')
   .await(ready);
+
+function zoomed() {
+  g.selectAll('path') // To prevent stroke width from scaling
+    .attr('transform', d3.event.transform);
+}
 
 function ready(error, data, population) {
   const populationById = {};
 
   population.forEach(d => { populationById[d.id] = +d.population; });
-  data.features.forEach(d => { d.population = populationById[d.id] });
+  data.features.forEach(d => { d.population = populationById[d.id]; });
 
-  svg.append('g')
-    .attr('class', 'countries')
+  g.attr('class', 'countries')
     .selectAll('path')
     .data(data.features)
     .enter().append('path')
