@@ -1,20 +1,24 @@
+/*
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+
+ReactDOM.render(<App />, document.getElementById('root'));
+*/
+
+import './index.css';
+
 import * as d3 from 'd3';
-import { queue } from 'd3-queue';
 import { mesh } from 'topojson';
+import { tsv, json } from 'd3-fetch';
 
 const K = 1000, M = 1000000;
 
-/*
-const tip = d3.tip()
-  .attr('class', 'd3-tip')
-  .offset([-10, 0])
-  .html((d) => `<strong>Country: </strong><span class='details'>${d.properties.name}<br></span><strong>Population: </strong><span class='details'>${d.population}</span>`);
-*/
-
 const
   margin = { top: 20, right: 20, bottom: 30, left: 30 },
-  width = 1200 - margin.left - margin.right,
-  height = 800 - margin.top - margin.bottom;
+  width = 600 - margin.left - margin.right,
+  height = 400 - margin.top - margin.bottom;
 
 const color = d3.scaleThreshold()
   .domain([10 * K, 100 * K, 500 * K, 1 * M, 5 * M, 10 * M, 50 * M, 100 * M, 500 * M, 1500 * M])
@@ -33,20 +37,17 @@ const projection = d3.geoMercator()
 
 const path = d3.geoPath().projection(projection);
 
-//svg.call(tip);
+Promise.all([
+  json('./data/countries.json'),
+  tsv('./data/population.tsv')
+]).then((dataResults) => {
+  const [countries, population] = dataResults;
+  handleData(countries, population);
+});
 
-queue()
-  .defer(d3.json, 'public/data/countries.json')
-  .defer(d3.csv, 'public/data/population.tsv')
-  .await(ready);
 
-function ready(error, data, population) {
-  var populationById = {};
-
-  console.log(error);
-  
-  console.log(data);
-  console.log(population);
+function handleData(data, population) {
+  const populationById = {};
 
   population.forEach(function (d) { populationById[d.id] = +d.population; });
 
@@ -62,24 +63,7 @@ function ready(error, data, population) {
     .style('opacity', 0.8)
     // tooltips
     .style('stroke', 'white')
-    .style('stroke-width', 0.3)
-    .on('mouseover', () => {
-      //tip.show(d);
-
-      d3.select(this)
-        .style('opacity', 1)
-        .style('stroke', 'white')
-        .style('stroke-width', 3);
-    })
-    .on('mouseout', () => {
-      //tip.hide(d);
-
-      d3.select(this)
-        .style('opacity', 0.8)
-        .style('stroke', 'white')
-        .style('stroke-width', 0.3);
-    });
-
+    .style('stroke-width', 0.3);
 
   svg.append('path')
     .datum(mesh(data.features, (a, b) => a.id !== b.id))
