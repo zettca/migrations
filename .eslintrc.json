@@ -12,6 +12,9 @@
     "sourceType": "module"
   },
   "rules": {
+    "eol-last": [
+      "error", "always"
+    ],
     "indent": [
       "warn",
       2

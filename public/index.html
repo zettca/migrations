@@ -7,31 +7,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#000000">
   <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
-  <title>Migrations InfoVis ✨</title>
+  <title>World Migration ✨</title>
 </head>
 
 <body>
-  <section>
-    <p>Controls go here</p>
-  </section>
-  <section>
-    <figure>
-      <h2>Scatterplot</h2>
-      <div></div>
-    </figure>
-    <figure>
-      <h2>Choropleth</h2>
-      <div id="choropleth"></div>
-    </figure>
-    <figure>
-      <h2>Line Chart</h2>
-      <div></div>
-    </figure>
-    <figure>
-      <h2>Chord Diagram</h2>
-      <div></div>
-    </figure>
-  </section>
+  <nav>
+    <div>Controls go here</div>
+  </nav>
+  <main class="idioms">
+    <div class="row">
+      <div class="idiom plot">
+        <div id="plot"></div>
+      </div>
+      <div class="idiom map">
+        <div id="map"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="idiom lines">
+        <div id="lines"></div>
+      </div>
+      <div class="idiom chord">
+        <div id="chord"></div>
+      </div>
+    </div>
+  </main>
+
   <section>
     <div id="root"></div>
   </section>

@@ -1,0 +1,31 @@
+/* PLOT */
+/* LINES */
+
+/* MAP */
+
+.countries .selected {
+  fill: darkorange !important;
+}
+
+.countries path {
+  stroke: #aac;
+  stroke-width: 0.6;
+  opacity: 0.8;
+}
+
+.countries path:hover {
+  stroke-width: 1.2;
+  opacity: 1;
+}
+
+.names {
+  fill: none;
+  stroke: white;
+  stroke-linejoin: round;
+}
+
+.names:hover {
+  fill: black;
+}
+
+/* CHORD */
