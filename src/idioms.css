@@ -28,13 +28,14 @@
 
 .line {
   fill: none;
-  stroke: #2171b5;
+  stroke: orange;
   stroke-width: 2;
 }
 
 .dots {
-  fill: #08306b;
-  stroke: #03132b;
+  fill: darkorange;
+  stroke: darkorange;
+  stroke-width: 2;
 }
 
 /* ========== MAP ========== */

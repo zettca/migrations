@@ -8,8 +8,20 @@ export default {
   drawLines: drawLines,
 };
 
+let plotSVG, linesSVG, mapSVG, chordSVG;
+
+let selectedCountry = 'SWE';
+let dataYears = null;
+
+function selected(d) {
+  d3.select('.selected').classed('selected', false);
+  d3.select(this).classed('selected', true);
+  selectedCountry = d.id;
+  updateLines();
+}
+
 export function drawPlot(id, width, height, data) {
-  const svg = makeSVG(id, width, height);
+  plotSVG = makeSVG(id, width, height);
   const margin = { top: 20, right: 20, bottom: 30, left: 40 };
 
   const x = d3.scaleLinear()
@@ -24,12 +36,7 @@ export function drawPlot(id, width, height, data) {
     g
       .attr('transform', `translate(0,${height - margin.bottom})`)
       .call(d3.axisBottom(x))
-      .call(g => g.select('.domain').remove())
-      .call(g => g.append('text')
-        .attr('class', 'x-axis')
-        .attr('x', width - margin.right)
-        .attr('y', -4)
-        .text(data.x));
+      .call(g => g.select('.domain').remove());
   }
 
   function yAxis(g) {
@@ -37,10 +44,7 @@ export function drawPlot(id, width, height, data) {
       .attr('transform', `translate(${margin.left},0)`)
       .call(d3.axisLeft(y))
       .call(g => g.select('.domain').remove())
-      .call(g => g.select('.tick:last-of-type text').clone()
-        .attr('class', 'y-axis')
-        .attr('x', 4)
-        .text(data.y));
+      .call(g => g.select('.tick:last-of-type text').clone());
   }
 
   function dodge(text, iterations = 300) {
@@ -73,10 +77,10 @@ export function drawPlot(id, width, height, data) {
       });
   }
 
-  svg.append('g').attr('class', 'axis-x').call(xAxis);
-  svg.append('g').attr('class', 'axis-y').call(yAxis);
+  plotSVG.append('g').attr('class', 'axis-x').call(xAxis);
+  plotSVG.append('g').attr('class', 'axis-y').call(yAxis);
 
-  svg.append('g')
+  plotSVG.append('g')
     .attr('class', 'circles')
     .selectAll('circle')
     .data(data)
@@ -85,7 +89,7 @@ export function drawPlot(id, width, height, data) {
     .attr('cy', d => y(d.y))
     .attr('r', 4);
 
-  svg.append('g')
+  plotSVG.append('g')
     .attr('class', 'text')
     .selectAll('text')
     .data(data)
@@ -96,59 +100,112 @@ export function drawPlot(id, width, height, data) {
     .call(dodge);
 }
 
-export function drawLines(id, widthMain, heightMain) {
-  const svg = makeSVG(id, widthMain, heightMain);
+function updateLines() {
+  const group = linesSVG.selectAll('g');
 
   const
-    margin = { top: 50, right: 50, bottom: 50, left: 50 },
-    width = widthMain - margin.left - margin.right,
-    height = heightMain - margin.top - margin.bottom;
+    margin = { top: 50, right: 50, bottom: 50, left: 100 },
+    width = linesSVG.attr('width') - margin.left - margin.right,
+    height = linesSVG.attr('height') - margin.top - margin.bottom;
 
-  const num = 16; // The number of datapoints
+  let dataset = [];
+  if (selectedCountry) {
+    for (let year in dataYears) {
+      const yearData = dataYears[year]['WORLD'][selectedCountry];
+      dataset.push({ year: new Date(year), value: Number(yearData) });
+    }
+  }
+  console.log(dataset);
 
   const xScale = d3.scaleLinear()
-    .domain([0, num - 1])
+    .domain([d3.min(dataset, d => d.year), d3.max(dataset, d => d.year)]).nice()
     .range([0, width]);
 
   const yScale = d3.scaleLinear()
-    .domain([0, 1])
+    .domain([d3.min(dataset, d => d.value), d3.max(dataset, d => d.value)]).nice()
     .range([height, 0]);
 
+  group.select('.y-axis').call(d3.axisLeft(yScale));
+
   const line = d3.line()
-    .x((_, i) => xScale(i))
-    .y((d) => yScale(d.y))
+    .x(d => xScale(d.year))
+    .y(d => yScale(d.value))
     .curve(d3.curveMonotoneX);
 
-  const dataset = d3.range(num).map(() => { return { 'y': d3.randomUniform(1)() }; });
+  group.select('.line')
+    .datum(dataset)
+    .transition().duration(1000)
+    .attr('d', line);
 
-  svg
+  group.selectAll('.dots circle').data(dataset)
+    .transition().duration(1000)
+    .attr('cx', (d) => xScale(d.year))
+    .attr('cy', (d) => yScale(d.value))
+    .attr('r', 5);
+}
+
+export function drawLines(id, widthMain, heightMain, data) {
+  linesSVG = makeSVG(id, widthMain, heightMain);
+
+  const
+    margin = { top: 50, right: 50, bottom: 50, left: 100 },
+    width = widthMain - margin.left - margin.right,
+    height = heightMain - margin.top - margin.bottom;
+
+  const group = linesSVG
     .attr('width', width + margin.left + margin.right)
     .attr('height', height + margin.top + margin.bottom)
     .append('g')
     .attr('transform', `translate(${margin.left},${margin.top})`);
 
-  svg.append('g')
-    .attr('transform', `translate(0,${height})`)
-    .call(d3.axisBottom(xScale));
+  dataYears = data;
 
-  svg.append('g')
+  let dataset = [];
+  if (selectedCountry) {
+    for (let year in dataYears) {
+      const yearData = dataYears[year]['WORLD'][selectedCountry];
+      dataset.push({ year: new Date(year), value: Number(yearData) });
+    }
+  }
+  console.log(dataset);
+
+  const xScale = d3.scaleLinear()
+    .domain([d3.min(dataset, d => d.year), d3.max(dataset, d => d.year)]).nice()
+    .range([0, width]);
+
+  const yScale = d3.scaleLinear()
+    .domain([d3.min(dataset, d => d.value), d3.max(dataset, d => d.value)]).nice()
+    .range([height, 0]);
+
+  const line = d3.line()
+    .x(d => xScale(d.year))
+    .y(d => yScale(d.value))
+    .curve(d3.curveMonotoneX);
+
+  group.append('g')
+    .attr('class', 'x-axis')
+    .attr('transform', `translate(0,${height})`)
+    .call(d3.axisBottom(xScale).tickFormat(d3.timeFormat('%Y')));
+
+  group.append('g')
+    .attr('class', 'y-axis')
     .call(d3.axisLeft(yScale));
 
-  svg.append('path')
+  group.append('path')
     .datum(dataset)
     .attr('class', 'line')
     .attr('d', line);
 
-  svg.append('g').attr('class', 'dots').selectAll()
+  group.append('g').attr('class', 'dots').selectAll()
     .data(dataset)
     .enter().append('circle')
-    .attr('cx', (d, i) => xScale(i))
-    .attr('cy', (d) => yScale(d.y))
+    .attr('cx', (d) => xScale(d.year))
+    .attr('cy', (d) => yScale(d.value))
     .attr('r', 5);
 }
 
 export function drawMap(id, width, height, data, population) {
-  const svg = makeSVG(id, width, height);
+  mapSVG = makeSVG(id, width, height);
   const countryPop = {};
 
   population.forEach((d) => countryPop[d.id] = +d.population);
@@ -166,9 +223,9 @@ export function drawMap(id, width, height, data, population) {
     .scaleExtent([1, 6])
     .on('zoom', zoomed);
 
-  svg.call(zoom);
+  mapSVG.call(zoom);
 
-  const map = svg.append('g').attr('class', 'countries');
+  const map = mapSVG.append('g').attr('class', 'countries');
   map
     .selectAll('path')
     .data(data.features)
@@ -180,22 +237,13 @@ export function drawMap(id, width, height, data, population) {
     .on('click', selected)
     .on('mouseover', mouseIn)
     .on('mouseout', mouseOut)
-    .on('contextmenu', test);
+    .on('contextmenu', contextMenu);
 
-  function selected(d) {
-    d3.select('.selected').classed('selected', false);
-    d3.select(this).classed('selected', true);
-  }
+  function mouseIn() { }
 
-  function mouseIn(d) {
+  function mouseOut() { }
 
-  }
-
-  function mouseOut(d) {
-
-  }
-
-  function test(d) {
+  function contextMenu() {
     console.log('right clicked...');
   }
 
@@ -207,7 +255,7 @@ export function drawMap(id, width, height, data, population) {
 }
 
 export function drawChord(id, width, height, data) {
-  const svg = makeSVG(id, width, height);
+  chordSVG = makeSVG(id, width, height);
 
   function groupTicks(d, step) {
     const k = (d.endAngle - d.startAngle) / d.value;
@@ -220,7 +268,7 @@ export function drawChord(id, width, height, data) {
     outerRadius = Math.min(width, height) * 0.5 - 30,
     innerRadius = outerRadius - 20;
 
-  svg
+  chordSVG
     .attr('viewBox', [-width / 2, -height / 2, width, height])
     .attr('font-size', 10)
     .attr('font-family', 'sans-serif');
@@ -240,7 +288,7 @@ export function drawChord(id, width, height, data) {
     .outerRadius(outerRadius);
 
 
-  const group = svg.append('g')
+  const group = chordSVG.append('g')
     .selectAll('g')
     .data(chords.groups)
     .enter().append('g');
@@ -269,7 +317,7 @@ export function drawChord(id, width, height, data) {
     .attr('text-anchor', d => d.angle > Math.PI ? 'end' : null)
     .text(d => formatValue(d.value));
 
-  svg.append('g')
+  chordSVG.append('g')
     .attr('fill-opacity', 0.67)
     .selectAll('path')
     .data(chords)

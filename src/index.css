@@ -1,7 +1,7 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: "Roboto","Cantarell", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-family: "Roboto", "Cantarell", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -28,9 +28,9 @@ nav {
 }
 
 .idiom:nth-child(1) {
-  width: 50%;
+  width: 40%;
 }
 
 .idiom:nth-child(2) {
-  width: 50%;
+  width: 60%;
 }
