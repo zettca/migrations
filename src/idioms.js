@@ -233,7 +233,7 @@ export function drawChord(id, width, height, data) {
   const formatValue = d3.formatPrefix(',.0', 1e3);
   const color = d3.scaleOrdinal()
     .domain(d3.range(4))
-    .range(['#000000', '#FFDD89', '#957244', '#F26223']);
+    .range(['#c6dbef', '#6baed6', '#2171b5', '#08306b']);
 
   const arc = d3.arc()
     .innerRadius(innerRadius)
