@@ -1,7 +1,59 @@
-/* PLOT */
-/* LINES */
+/* ========== PLOT ========== */
 
-/* MAP */
+.axis-x {
+  fill: black;
+  /* font-weight: bold; */
+  text-anchor: end;
+}
+
+.axis-y {
+  fill: black;
+  /* font-weight: bold; */
+  text-anchor: start;
+}
+
+.circles {
+  fill: orange;
+  stroke: orangered;
+  stroke-width: 0.8;
+  opacity: 0.7;
+}
+
+.text {
+  font-family: sans-serif;
+  font-size: 10px;
+}
+
+/* ========== LINES ========== */
+
+.line {
+  fill: none;
+  stroke: #ffab00;
+  stroke-width: 2;
+}
+
+.overlay {
+  fill: blue;
+  pointer-events: all;
+}
+
+/* Style the dots by assigning a fill and stroke */
+
+.dots {
+  fill: #ffab00;
+  stroke: #fff;
+}
+
+.focus circle {
+  fill: none;
+  stroke: steelblue;
+}
+
+/* ========== MAP ========== */
+
+.countries {
+  fill: green;
+}
 
 .countries .selected {
   fill: darkorange !important;
@@ -28,4 +80,4 @@
   fill: black;
 }
 
-/* CHORD */
+/* ========== CHORD ========== */
