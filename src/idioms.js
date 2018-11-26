@@ -104,7 +104,7 @@ export function drawLines(id, widthMain, heightMain) {
     width = widthMain - margin.left - margin.right,
     height = heightMain - margin.top - margin.bottom;
 
-  const num = 21; // The number of datapoints
+  const num = 16; // The number of datapoints
 
   const xScale = d3.scaleLinear()
     .domain([0, num - 1])
@@ -118,7 +118,6 @@ export function drawLines(id, widthMain, heightMain) {
     .x((_, i) => xScale(i))
     .y((d) => yScale(d.y))
     .curve(d3.curveMonotoneX);
-
 
   const dataset = d3.range(num).map(() => { return { 'y': d3.randomUniform(1)() }; });
 

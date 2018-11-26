@@ -13,8 +13,8 @@
 }
 
 .circles {
-  fill: orange;
-  stroke: orangered;
+  fill: #08306b;
+  stroke: #03132b;
   stroke-width: 0.8;
   opacity: 0.7;
 }
@@ -28,25 +28,13 @@
 
 .line {
   fill: none;
-  stroke: #ffab00;
+  stroke: #2171b5;
   stroke-width: 2;
 }
 
-.overlay {
-  fill: blue;
-  pointer-events: all;
-}
-
-/* Style the dots by assigning a fill and stroke */
-
 .dots {
-  fill: #ffab00;
-  stroke: #fff;
-}
-
-.focus circle {
-  fill: none;
-  stroke: steelblue;
+  fill: #08306b;
+  stroke: #03132b;
 }
 
 /* ========== MAP ========== */
