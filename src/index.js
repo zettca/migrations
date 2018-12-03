@@ -46,7 +46,7 @@ const plotData = [
 // DYNAMIC REAL DATA
 
 const years = [1990, 1995, 2000, 2005, 2010, 2015, 2017];
-Promise.all(years.map(year => tsv(`./data/migration_flows/${year}.tsv`)))
+Promise.all(years.map(year => tsv(`./data/migration/${year}.tsv`)))
   .then(dataYearsList => {
     const dataYears = {};
     dataYearsList.forEach((yearData, i) => {
