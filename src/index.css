@@ -11,7 +11,7 @@ main, nav {
 }
 
 nav {
-  padding: 1rem 0;
+  padding: 0.6rem 0;
 }
 
 .row {
@@ -29,7 +29,6 @@ nav {
 .idiom {
   margin: 2px;
   padding: 1rem;
-  border: 1px solid silver !important;
 }
 
 .idiom:nth-child(1) {
