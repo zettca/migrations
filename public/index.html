@@ -7,12 +7,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#000000">
   <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
-  <title>World Migration ✨</title>
+  <title>World Migrations</title>
 </head>
 
 <body>
   <nav>
-    <div>Controls will go here</div>
+    <div class="row">
+      <div id="countrySelect"></div>
+      <div id="yearSlider"></div>
+    </div>
   </nav>
   <main class="idioms">
     <div class="row">
@@ -27,16 +30,11 @@
       <div class="idiom plot">
         <div id="plot"></div>
       </div>
-
       <div class="idiom lines">
         <div id="lines"></div>
       </div>
     </div>
   </main>
-
-  <section>
-    <div id="root"></div>
-  </section>
 </body>
 
 </html>

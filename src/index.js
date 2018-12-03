@@ -1,15 +1,15 @@
-/*
 import React from 'react';
 import ReactDOM from 'react-dom';
-ReactDOM.render(<App />, document.getElementById('root'));
-*/
-
 import { tsv, json } from 'd3-fetch';
-import idioms from './idioms';
+
+import YearSlider from './components/YearSlider';
+import CountrySelect from './components/CountrySelect';
+import { chord, plot, lines, map } from './idioms';
+
 import './index.css';
 import './idioms.css';
 
-// FETCH DATA AND DRAW
+// STATIC TEST DATA
 
 const chordData = [
   [16, 16, 13, 12, 0, 6],
@@ -43,6 +43,8 @@ const plotData = [
   { 'name': 'T', 'x': 21.4, 'y': 109 }
 ];
 
+// DYNAMIC REAL DATA
+
 const years = [1990, 1995, 2000, 2005, 2010, 2015, 2017];
 Promise.all(years.map(year => tsv(`./data/migration_flows/${year}f.tsv`)))
   .then(dataYearsList => {
@@ -52,22 +54,31 @@ Promise.all(years.map(year => tsv(`./data/migration_flows/${year}f.tsv`)))
       yearData.forEach(countryData => dataYears[years[i]][countryData.Country] = countryData);
     });
 
-    console.log(dataYears);
+    //console.log(dataYears);
 
     Promise.all([
       json('./data/countries.json'),
-      //tsv('./data/conversion.tsv'),
+      tsv('./data/conversion.tsv'),
       tsv('./data/population.tsv'),
     ]).then((dataResults) => {
-      const [mapData, /*conversion,*/ population] = dataResults;
-      idioms.drawPlot('#plot', 600, 420, plotData);
-      idioms.drawLines('#lines', 800, 420, dataYears);
-      idioms.drawMap('#map', 800, 420, mapData, population);
-      idioms.drawChord('#chord', 600, 420, chordData);
-
+      loadEverything(dataResults, dataYears);
     });
   });
 
+function loadEverything(data, dataYears) {
+  const [mapData, conversion, population] = data;
+  plot.draw('#plot', 600, 420, plotData);
+  lines.draw('#lines', 800, 420, dataYears);
+  map.draw('#map', 800, 420, mapData, population);
+  chord.draw('#chord', 600, 420, chordData);
 
+  const select = <CountrySelect countries={conversion} onChange={handleCountrySelection} />;
+  const slider = (<YearSlider />);
+  ReactDOM.render(select, document.getElementById('countrySelect'));
+  ReactDOM.render(slider, document.getElementById('yearSlider'));
+}
 
-// UPDATE DATA HANDLERS
+function handleCountrySelection(el) {
+  console.log('Country Selection:');
+  console.log(el);
+}
