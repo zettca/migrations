@@ -25,7 +25,7 @@ BZ	BLZ	Belize	84	Americas	Latin America and the Caribbean	Central America	19	419
 BJ	BEN	Benin	204	Africa	Sub-Saharan Africa	Western Africa	2	202	11
 BM	BMU	Bermuda	60	Americas	Northern America		19	21	
 BT	BTN	Bhutan	64	Asia	Southern Asia		142	34	
-BO	BOL	Bolivia (Plurinational State of)	68	Americas	Latin America and the Caribbean	South America	19	419	5
+BO	BOL	Bolivia	68	Americas	Latin America and the Caribbean	South America	19	419	5
 BQ	BES	Bonaire, Sint Eustatius and Saba	535	Americas	Latin America and the Caribbean	Caribbean	19	419	29
 BA	BIH	Bosnia and Herzegovina	70	Europe	Southern Europe		150	39	
 BW	BWA	Botswana	72	Africa	Sub-Saharan Africa	Southern Africa	2	202	18
@@ -50,7 +50,7 @@ CC	CCK	Cocos (Keeling) Islands	166	Oceania	Australia and New Zealand		9	53
 CO	COL	Colombia	170	Americas	Latin America and the Caribbean	South America	19	419	5
 KM	COM	Comoros	174	Africa	Sub-Saharan Africa	Eastern Africa	2	202	14
 CG	COG	Congo	178	Africa	Sub-Saharan Africa	Middle Africa	2	202	17
-CD	COD	Congo (Democratic Republic of the)	180	Africa	Sub-Saharan Africa	Middle Africa	2	202	17
+CD	COD	DR Congo	180	Africa	Sub-Saharan Africa	Middle Africa	2	202	17
 CK	COK	Cook Islands	184	Oceania	Polynesia		9	61	
 CR	CRI	Costa Rica	188	Americas	Latin America and the Caribbean	Central America	19	419	13
 CI	CIV	Côte d'Ivoire	384	Africa	Sub-Saharan Africa	Western Africa	2	202	11
@@ -104,7 +104,7 @@ HU	HUN	Hungary	348	Europe	Eastern Europe		150	151
 IS	ISL	Iceland	352	Europe	Northern Europe		150	154	
 IN	IND	India	356	Asia	Southern Asia		142	34	
 ID	IDN	Indonesia	360	Asia	South-eastern Asia		142	35	
-IR	IRN	Iran (Islamic Republic of)	364	Asia	Southern Asia		142	34	
+IR	IRN	Iran	364	Asia	Southern Asia		142	34	
 IQ	IRQ	Iraq	368	Asia	Western Asia		142	145	
 IE	IRL	Ireland	372	Europe	Northern Europe		150	154	
 IM	IMN	Isle of Man	833	Europe	Northern Europe		150	154	
@@ -117,11 +117,11 @@ JO	JOR	Jordan	400	Asia	Western Asia		142	145
 KZ	KAZ	Kazakhstan	398	Asia	Central Asia		142	143	
 KE	KEN	Kenya	404	Africa	Sub-Saharan Africa	Eastern Africa	2	202	14
 KI	KIR	Kiribati	296	Oceania	Micronesia		9	57	
-KP	PRK	Korea (Democratic People's Republic of)	408	Asia	Eastern Asia		142	30	
-KR	KOR	Korea (Republic of)	410	Asia	Eastern Asia		142	30	
+KP	PRK	North Korea	408	Asia	Eastern Asia		142	30	
+KR	KOR	South Korea	410	Asia	Eastern Asia		142	30	
 KW	KWT	Kuwait	414	Asia	Western Asia		142	145	
 KG	KGZ	Kyrgyzstan	417	Asia	Central Asia		142	143	
-LA	LAO	Lao People's Democratic Republic	418	Asia	South-eastern Asia		142	35	
+LA	LAO	Lao	418	Asia	South-eastern Asia		142	35	
 LV	LVA	Latvia	428	Europe	Northern Europe		150	154	
 LB	LBN	Lebanon	422	Asia	Western Asia		142	145	
 LS	LSO	Lesotho	426	Africa	Sub-Saharan Africa	Southern Africa	2	202	18
@@ -131,7 +131,7 @@ LI	LIE	Liechtenstein	438	Europe	Western Europe		150	155
 LT	LTU	Lithuania	440	Europe	Northern Europe		150	154	
 LU	LUX	Luxembourg	442	Europe	Western Europe		150	155	
 MO	MAC	Macao	446	Asia	Eastern Asia		142	30	
-MK	MKD	Macedonia (the former Yugoslav Republic of)	807	Europe	Southern Europe		150	39	
+MK	MKD	Macedonia	807	Europe	Southern Europe		150	39	
 MG	MDG	Madagascar	450	Africa	Sub-Saharan Africa	Eastern Africa	2	202	14
 MW	MWI	Malawi	454	Africa	Sub-Saharan Africa	Eastern Africa	2	202	14
 MY	MYS	Malaysia	458	Asia	South-eastern Asia		142	35	
@@ -144,8 +144,8 @@ MR	MRT	Mauritania	478	Africa	Sub-Saharan Africa	Western Africa	2	202	11
 MU	MUS	Mauritius	480	Africa	Sub-Saharan Africa	Eastern Africa	2	202	14
 YT	MYT	Mayotte	175	Africa	Sub-Saharan Africa	Eastern Africa	2	202	14
 MX	MEX	Mexico	484	Americas	Latin America and the Caribbean	Central America	19	419	13
-FM	FSM	Micronesia (Federated States of)	583	Oceania	Micronesia		9	57	
-MD	MDA	Moldova (Republic of)	498	Europe	Eastern Europe		150	151	
+FM	FSM	Micronesia	583	Oceania	Micronesia		9	57	
+MD	MDA	Moldova	498	Europe	Eastern Europe		150	151	
 MC	MCO	Monaco	492	Europe	Western Europe		150	155	
 MN	MNG	Mongolia	496	Asia	Eastern Asia		142	30	
 ME	MNE	Montenegro	499	Europe	Southern Europe		150	39	
@@ -200,13 +200,13 @@ RS	SRB	Serbia	688	Europe	Southern Europe		150	39
 SC	SYC	Seychelles	690	Africa	Sub-Saharan Africa	Eastern Africa	2	202	14
 SL	SLE	Sierra Leone	694	Africa	Sub-Saharan Africa	Western Africa	2	202	11
 SG	SGP	Singapore	702	Asia	South-eastern Asia		142	35	
-SX	SXM	Sint Maarten (Dutch part)	534	Americas	Latin America and the Caribbean	Caribbean	19	419	29
+SX	SXM	Sint Maarten	534	Americas	Latin America and the Caribbean	Caribbean	19	419	29
 SK	SVK	Slovakia	703	Europe	Eastern Europe		150	151	
 SI	SVN	Slovenia	705	Europe	Southern Europe		150	39	
 SB	SLB	Solomon Islands	90	Oceania	Melanesia		9	54	
 SO	SOM	Somalia	706	Africa	Sub-Saharan Africa	Eastern Africa	2	202	14
 ZA	ZAF	South Africa	710	Africa	Sub-Saharan Africa	Southern Africa	2	202	18
-GS	SGS	South Georgia and the South Sandwich Islands	239	Americas	Latin America and the Caribbean	South America	19	419	5
+GS	SGS	South Georgia	239	Americas	Latin America and the Caribbean	South America	19	419	5
 SS	SSD	South Sudan	728	Africa	Sub-Saharan Africa	Eastern Africa	2	202	14
 ES	ESP	Spain	724	Europe	Southern Europe		150	39	
 LK	LKA	Sri Lanka	144	Asia	Southern Asia		142	34	
@@ -218,7 +218,7 @@ CH	CHE	Switzerland	756	Europe	Western Europe		150	155
 SY	SYR	Syrian Arab Republic	760	Asia	Western Asia		142	145	
 TW	TWN	Taiwan, Province of China	158	Asia	Eastern Asia		142	30	
 TJ	TJK	Tajikistan	762	Asia	Central Asia		142	143	
-TZ	TZA	Tanzania, United Republic of	834	Africa	Sub-Saharan Africa	Eastern Africa	2	202	14
+TZ	TZA	Tanzania	834	Africa	Sub-Saharan Africa	Eastern Africa	2	202	14
 TH	THA	Thailand	764	Asia	South-eastern Asia		142	35	
 TL	TLS	Timor-Leste	626	Asia	South-eastern Asia		142	35	
 TG	TGO	Togo	768	Africa	Sub-Saharan Africa	Western Africa	2	202	11
@@ -233,16 +233,16 @@ TV	TUV	Tuvalu	798	Oceania	Polynesia		9	61
 UG	UGA	Uganda	800	Africa	Sub-Saharan Africa	Eastern Africa	2	202	14
 UA	UKR	Ukraine	804	Europe	Eastern Europe		150	151	
 AE	ARE	United Arab Emirates	784	Asia	Western Asia		142	145	
-GB	GBR	United Kingdom of Great Britain and Northern Ireland	826	Europe	Northern Europe		150	154	
+GB	GBR	United Kingdom	826	Europe	Northern Europe		150	154	
 US	USA	United States of America	840	Americas	Northern America		19	21	
 UM	UMI	United States Minor Outlying Islands	581	Oceania	Micronesia		9	57	
 UY	URY	Uruguay	858	Americas	Latin America and the Caribbean	South America	19	419	5
 UZ	UZB	Uzbekistan	860	Asia	Central Asia		142	143	
 VU	VUT	Vanuatu	548	Oceania	Melanesia		9	54	
-VE	VEN	Venezuela (Bolivarian Republic of)	862	Americas	Latin America and the Caribbean	South America	19	419	5
+VE	VEN	Venezuela	862	Americas	Latin America and the Caribbean	South America	19	419	5
 VN	VNM	Viet Nam	704	Asia	South-eastern Asia		142	35	
-VG	VGB	Virgin Islands (British)	92	Americas	Latin America and the Caribbean	Caribbean	19	419	29
-VI	VIR	Virgin Islands (U.S.)	850	Americas	Latin America and the Caribbean	Caribbean	19	419	29
+VG	VGB	Virgin Islands (UK)	92	Americas	Latin America and the Caribbean	Caribbean	19	419	29
+VI	VIR	Virgin Islands (US)	850	Americas	Latin America and the Caribbean	Caribbean	19	419	29
 WF	WLF	Wallis and Futuna	876	Oceania	Polynesia		9	61	
 EH	ESH	Western Sahara	732	Africa	Northern Africa		2	15	
 YE	YEM	Yemen	887	Asia	Western Asia		142	145	
