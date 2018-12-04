@@ -1,3 +1,4 @@
+import store from 'store';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { tsv, json } from 'd3-fetch';
@@ -8,6 +9,10 @@ import { chord, plot, lines, map } from './idioms';
 
 import './index.css';
 import './idioms.css';
+
+// STARTUP
+
+store.remove('selectedCountries');
 
 // STATIC TEST DATA
 
@@ -68,17 +73,30 @@ Promise.all(years.map(year => tsv(`./data/migration/${year}.tsv`)))
 function loadEverything(data, dataYears) {
   const [mapData, conversion, population] = data;
   plot.draw('#plot', 600, 420, plotData);
-  lines.draw('#lines', 800, 420, dataYears);
-  map.draw('#map', 800, 420, mapData, population);
+  lines.draw('#lines', 1000, 420, dataYears);
+  map.draw('#map', 1000, 420, mapData, population);
   chord.draw('#chord', 600, 420, chordData);
 
-  const select = <CountrySelect countries={conversion} onChange={handleCountrySelection} />;
-  const slider = (<YearSlider />);
-  ReactDOM.render(select, document.getElementById('countrySelect'));
-  ReactDOM.render(slider, document.getElementById('yearSlider'));
+  // const codeToName = {};
+  // conversion.forEach(c => codeToName[c.code3] = c.name);
+  // store.set('codeToName', codeToName);
+
+  ReactDOM.render(getSelect(conversion), document.getElementById('countrySelect'));
+  ReactDOM.render(<YearSlider />, document.getElementById('yearSlider'));
 }
 
-function handleCountrySelection(el) {
-  console.log('Country Selection:');
-  console.log(el);
+function getSelect(conversion, value) {
+  return (
+    <CountrySelect
+      value={value}
+      countries={conversion}
+      onChange={countryChange} />
+  );
+}
+
+function countryChange(selection) {
+  const countries = new Set(store.get('selectedCountries'));
+  selection.forEach(el => countries.add(el.value));
+  store.set('selectedCountries', Array.from(countries));
+  map.update();
 }

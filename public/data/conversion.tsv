@@ -144,7 +144,7 @@ MR	MRT	Mauritania	478	Africa	Sub-Saharan Africa	Western Africa	2	202	11
 MU	MUS	Mauritius	480	Africa	Sub-Saharan Africa	Eastern Africa	2	202	14
 YT	MYT	Mayotte	175	Africa	Sub-Saharan Africa	Eastern Africa	2	202	14
 MX	MEX	Mexico	484	Americas	Latin America and the Caribbean	Central America	19	419	13
-FM	FSM	Federated States of Micronesia	583	Oceania	Micronesia		9	57	
+FM	FSM	Micronesia	583	Oceania	Micronesia		9	57	
 MD	MDA	Moldova	498	Europe	Eastern Europe		150	151	
 MC	MCO	Monaco	492	Europe	Western Europe		150	155	
 MN	MNG	Mongolia	496	Asia	Eastern Asia		142	30	
@@ -206,7 +206,7 @@ SI	SVN	Slovenia	705	Europe	Southern Europe		150	39
 SB	SLB	Solomon Islands	90	Oceania	Melanesia		9	54	
 SO	SOM	Somalia	706	Africa	Sub-Saharan Africa	Eastern Africa	2	202	14
 ZA	ZAF	South Africa	710	Africa	Sub-Saharan Africa	Southern Africa	2	202	18
-GS	SGS	South Georgia and the South Sandwich Islands	239	Americas	Latin America and the Caribbean	South America	19	419	5
+GS	SGS	South Georgia	239	Americas	Latin America and the Caribbean	South America	19	419	5
 SS	SSD	South Sudan	728	Africa	Sub-Saharan Africa	Eastern Africa	2	202	14
 ES	ESP	Spain	724	Europe	Southern Europe		150	39	
 LK	LKA	Sri Lanka	144	Asia	Southern Asia		142	34	
@@ -218,7 +218,7 @@ CH	CHE	Switzerland	756	Europe	Western Europe		150	155
 SY	SYR	Syrian Arab Republic	760	Asia	Western Asia		142	145	
 TW	TWN	Taiwan, Province of China	158	Asia	Eastern Asia		142	30	
 TJ	TJK	Tajikistan	762	Asia	Central Asia		142	143	
-TZ	TZA	Tanzania, United Republic of	834	Africa	Sub-Saharan Africa	Eastern Africa	2	202	14
+TZ	TZA	Tanzania	834	Africa	Sub-Saharan Africa	Eastern Africa	2	202	14
 TH	THA	Thailand	764	Asia	South-eastern Asia		142	35	
 TL	TLS	Timor-Leste	626	Asia	South-eastern Asia		142	35	
 TG	TGO	Togo	768	Africa	Sub-Saharan Africa	Western Africa	2	202	11
@@ -233,7 +233,7 @@ TV	TUV	Tuvalu	798	Oceania	Polynesia		9	61
 UG	UGA	Uganda	800	Africa	Sub-Saharan Africa	Eastern Africa	2	202	14
 UA	UKR	Ukraine	804	Europe	Eastern Europe		150	151	
 AE	ARE	United Arab Emirates	784	Asia	Western Asia		142	145	
-GB	GBR	United Kingdom of Great Britain and Northern Ireland	826	Europe	Northern Europe		150	154	
+GB	GBR	United Kingdom	826	Europe	Northern Europe		150	154	
 US	USA	United States of America	840	Americas	Northern America		19	21	
 UM	UMI	United States Minor Outlying Islands	581	Oceania	Micronesia		9	57	
 UY	URY	Uruguay	858	Americas	Latin America and the Caribbean	South America	19	419	5

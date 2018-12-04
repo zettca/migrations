@@ -28,13 +28,10 @@
 
 .line {
   fill: none;
-  stroke: orange;
   stroke-width: 2;
 }
 
 .dots {
-  fill: darkorange;
-  stroke: darkorange;
   stroke-width: 2;
 }
 
@@ -42,10 +39,6 @@
 
 .countries {
   fill: green;
-}
-
-.countries .selected {
-  fill: darkorange !important;
 }
 
 .countries path {
@@ -70,4 +63,3 @@
 }
 
 /* ========== CHORD ========== */
-
