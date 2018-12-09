@@ -38,13 +38,14 @@
 /* ========== MAP ========== */
 
 .countries {
-  fill: green;
+  fill: black;
 }
 
 .countries path {
-  stroke: #aac;
-  stroke-width: 0.6;
-  opacity: 0.8;
+  stroke: #ccf;
+  opacity: 0.9;
+  stroke-width: 0.4;
+  stroke-opacity: 1;
 }
 
 .countries path:hover {

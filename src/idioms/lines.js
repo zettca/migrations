@@ -9,14 +9,41 @@ export default {
 
 let group;
 let svgDims;
-let dataYears;
+let migrationData;
+let populationData;
 
 const margin = { top: 10, right: 20, bottom: 20, left: 40 };
 
-export function drawLines(id, width, height, data) {
+function loadDataset() {
+  const dataset = [];
+  const countries = store.get('selectedCountries');
+  if (!countries || countries.length === 0) return [];
+
+  const isEmigration = store.get('isEmigration');
+
+  for (let c of countries) {
+    const country = [];
+    for (let year in migrationData) {
+      const dataYear = migrationData[year];
+      if (dataYear[c] === undefined) continue; // no data
+
+      const migrants = Number(isEmigration ? dataYear['WORLD'][c] : dataYear[c]['Total']);
+      const pop = populationData[c][year] * 1000;
+      const data = migrants /*/ pop*/;
+
+      country.push({ year: Number(year), value: Number(data) });
+    }
+    dataset.push(country);
+  }
+
+  return dataset;
+}
+
+export function drawLines(id, width, height, data, pop) {
   svgDims = { width, height };
   group = createSVG(id, { width, height }, margin);
-  dataYears = data;
+  migrationData = data;
+  populationData = pop;
 
   updateLines(width, height);
 }
@@ -26,17 +53,7 @@ export function updateLines() {
     width = svgDims.width - margin.left - margin.right,
     height = svgDims.height - margin.top - margin.bottom;
 
-  const dataset = [];
-  const countries = store.get('selectedCountries');
-  if (!countries || countries.length === 0) return;
-  for (let country of countries) {
-    const countryData = [];
-    for (let year in dataYears) {
-      const yearData = dataYears[year]['WORLD'][country];
-      countryData.push({ year: Number(year), value: Number(yearData) });
-    }
-    dataset.push(countryData);
-  }
+  const dataset = loadDataset();
 
   const flatData = dataset.reduce((acc, d) => acc.concat(d), []);
   const getDomain = (dataset, func) => [d3.min(dataset, func), d3.max(dataset, func)];

@@ -9,16 +9,24 @@ export default {
 };
 
 let mapSVG;
+let migrationData;
+let populationData;
 
 function mouseIn() { }
 
 function mouseOut() { }
 
-function contextMenu() {
-  console.log('right clicked...');
+function contextMenu(d) {
+  d3.event.preventDefault();
+
+  const selectedCountries = new Set(store.get('selectedCountries'));
+  selectedCountries.delete(d.id);
+  store.set('selectedCountries', Array.from(selectedCountries));
+
+  updateMap();
 }
 
-function selected(d) {
+function clicked(d) {
   const selectedCountries = new Set(store.get('selectedCountries'));
   selectedCountries.add(d.id);
   store.set('selectedCountries', Array.from(selectedCountries));
@@ -26,15 +34,15 @@ function selected(d) {
   updateMap();
 }
 
-export function drawMap(id, width, height, data, population) {
+const color = d3.scaleThreshold()
+  .domain([1, 10, 100, 250, 500, 1000, 2500, 5000, 10000].map(n => n * 1000))
+  .range(d3.schemeBlues[9]);
+
+export function drawMap(id, width, height, topology, data, population) {
   mapSVG = createSVG(id, { width, height });
-  const countryPop = {};
 
-  population.forEach((d) => countryPop[d.id] = +d.population);
-
-  const color = d3.scaleThreshold()
-    .domain([10, 100, 500, 1000, 5000, 10000, 50000, 100000, 500000].map(n => n * 1000))
-    .range(d3.schemeBlues[9]);
+  migrationData = data;
+  populationData = population;
 
   const projection = d3.geoEquirectangular()
     .scale(width / 4)
@@ -50,13 +58,12 @@ export function drawMap(id, width, height, data, population) {
   const map = mapSVG.append('g').attr('class', 'countries');
   map
     .selectAll('path')
-    .data(data.features)
+    .data(topology.features)
     .enter().append('path')
     .attr('id', (d) => d.id)
     .attr('name', (d) => d.properties.name)
     .attr('d', path)
-    .style('fill', (d) => color(countryPop[d.id]))
-    .on('click', selected)
+    .on('click', clicked)
     .on('mouseover', mouseIn)
     .on('mouseout', mouseOut)
     .on('contextmenu', contextMenu)
@@ -75,12 +82,27 @@ export function updateMap() {
   const num = 6;
   const colors = d3.schemeRdYlGn[num];
 
-  d3.select('.selected').classed('selected', false);
+  console.log(selectedCountries);
+
+  d3.selectAll('.selected').classed('selected', false);
   selectedCountries.forEach((countryID, i) => {
     d3.select('path#' + countryID)
       .style('fill', colors[i % num])
       .classed('selected', true);
   });
+
+  const yearRange = store.get('years');
+  const year = yearRange ? yearRange[0] : 1990;
+  const isEmigration = store.get('isEmigration');
+
+  mapSVG.selectAll('path:not(.selected)')
+    //.transition().duration(600)
+    .style('fill', (d) => {
+      const dataYear = migrationData[year];
+      if (dataYear[d.id] === undefined) return 'black'; // no data
+      const migrants = Number(isEmigration ? dataYear['WORLD'][d.id] : dataYear[d.id]['Total']);
+      return color(migrants);
+    });
 
   lines.update();
 }

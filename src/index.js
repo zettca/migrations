@@ -5,7 +5,9 @@ import { tsv, json } from 'd3-fetch';
 
 import YearSlider from './components/YearSlider';
 import CountrySelect from './components/CountrySelect';
+import MigrationSwitch from './components/MigrationSwitch';
 import { chord, plot, lines, map } from './idioms';
+import { filterNaN } from './helpers';
 
 import './index.css';
 import './idioms.css';
@@ -13,6 +15,7 @@ import './idioms.css';
 // STARTUP
 
 store.remove('selectedCountries');
+store.remove('isEmigration');
 
 // STATIC TEST DATA
 
@@ -59,37 +62,53 @@ Promise.all(years.map(year => tsv(`./data/migration/${year}.tsv`)))
       yearData.forEach(countryData => dataYears[years[i]][countryData.Country] = countryData);
     });
 
-    //console.log(dataYears);
-
     Promise.all([
-      json('./data/countries.json'),
+      json('./data/topology.json'),
       tsv('./data/conversion.tsv'),
       tsv('./data/population.tsv'),
+      tsv('./data/whr2017.tsv'),
     ]).then((dataResults) => {
       loadEverything(dataResults, dataYears);
     });
   });
 
 function loadEverything(data, dataYears) {
-  const [mapData, conversion, population] = data;
+  const [topology, conversion, population, whrData] = data;
+
+  console.log(dataYears);
+
+
+  const countryPop = {};
+  const countryWHR = {};
+  population.forEach((c) => countryPop[c.Country] = filterNaN(c));
+  whrData.forEach((c) => countryWHR[c.country] = filterNaN(c));
+
   plot.draw('#plot', 600, 420, plotData);
-  lines.draw('#lines', 1000, 420, dataYears);
-  map.draw('#map', 1000, 420, mapData, population);
+  lines.draw('#lines', 1000, 420, dataYears, countryPop);
+  map.draw('#map', 1000, 420, topology, dataYears, countryPop);
   chord.draw('#chord', 600, 420, chordData);
 
-  // const codeToName = {};
-  // conversion.forEach(c => codeToName[c.code3] = c.name);
-  // store.set('codeToName', codeToName);
+  const codeToName = {};
+  conversion.forEach(c => codeToName[c.code3] = c.name);
+  //store.set('codeToName', codeToName);
 
-  ReactDOM.render(getSelect(conversion), document.getElementById('countrySelect'));
+  ReactDOM.render(getSelect(dataYears, codeToName), document.getElementById('countrySelect'));
+  ReactDOM.render(<MigrationSwitch />, document.getElementById('migrationSwitch'));
   ReactDOM.render(<YearSlider />, document.getElementById('yearSlider'));
 }
 
-function getSelect(conversion, value) {
+function getSelect(data, codeToName, value) {
+  const countries = [];
+  Object.keys(data[1990]).forEach(key => {
+    if (key.length === 3) {
+      countries.push({ value: key, label: codeToName[key], /*group: c.region*/ });
+    }
+  });
+
   return (
     <CountrySelect
       value={value}
-      countries={conversion}
+      countries={countries}
       onChange={countryChange} />
   );
 }

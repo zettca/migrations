@@ -1,5 +1,7 @@
 import React from 'react';
+import store from 'store';
 import Slider from 'rc-slider';
+import { map } from '../idioms';
 
 import 'rc-slider/assets/index.css';
 
@@ -15,11 +17,13 @@ const marks = {
 
 function yearChange(params) {
   console.log(params);
+  store.set('years', params);
+  map.update();
 }
 
 export default class YearSlider extends React.PureComponent {
   render() {
-    const style = { padding: '0.4em 4em 1em' };
+    const style = { padding: '0.6em 2em 0' };
 
     return (
       <div style={style}>
