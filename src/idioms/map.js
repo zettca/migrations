@@ -82,8 +82,6 @@ export function updateMap() {
   const num = 6;
   const colors = d3.schemeRdYlGn[num];
 
-  console.log(selectedCountries);
-
   d3.selectAll('.selected').classed('selected', false);
   selectedCountries.forEach((countryID, i) => {
     d3.select('path#' + countryID)
@@ -91,8 +89,7 @@ export function updateMap() {
       .classed('selected', true);
   });
 
-  const yearRange = store.get('years');
-  const year = yearRange ? yearRange[0] : 1990;
+  const year = store.get('year') || 2010;
   const isEmigration = store.get('isEmigration');
 
   mapSVG.selectAll('path:not(.selected)')

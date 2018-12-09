@@ -5,12 +5,7 @@ import makeAnimated from 'react-select/lib/animated';
 export default class CountrySelect extends React.PureComponent {
   render() {
     const { countries } = this.props;
-    console.log(countries);
-
     const options = countries.sort((a, b) => a.label < b.label ? -1 : 1);
-
-    console.log(options);
-
 
     return (
       <Select isMulti

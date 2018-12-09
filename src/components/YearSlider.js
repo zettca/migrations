@@ -17,7 +17,7 @@ const marks = {
 
 function yearChange(params) {
   console.log(params);
-  store.set('years', params);
+  store.set('year', params);
   map.update();
 }
 
@@ -27,13 +27,13 @@ export default class YearSlider extends React.PureComponent {
 
     return (
       <div style={style}>
-        <Slider.Range
+        <Slider
           min={1990}
           max={2017}
           marks={marks}
           step={null}
           onChange={yearChange}
-          defaultValue={[2005, 2015]} />
+          defaultValue={2005} />
       </div>
     );
   }

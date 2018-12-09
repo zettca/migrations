@@ -56,10 +56,10 @@ const plotData = [
 const years = [1990, 1995, 2000, 2005, 2010, 2015, 2017];
 Promise.all(years.map(year => tsv(`./data/migration/${year}.tsv`)))
   .then(dataYearsList => {
-    const dataYears = {};
+    const migrationData = {};
     dataYearsList.forEach((yearData, i) => {
-      dataYears[years[i]] = {};
-      yearData.forEach(countryData => dataYears[years[i]][countryData.Country] = countryData);
+      migrationData[years[i]] = {};
+      yearData.forEach(countryData => migrationData[years[i]][countryData.Country] = countryData);
     });
 
     Promise.all([
@@ -68,31 +68,27 @@ Promise.all(years.map(year => tsv(`./data/migration/${year}.tsv`)))
       tsv('./data/population.tsv'),
       tsv('./data/whr2017.tsv'),
     ]).then((dataResults) => {
-      loadEverything(dataResults, dataYears);
+      loadEverything(dataResults, migrationData);
     });
   });
 
-function loadEverything(data, dataYears) {
+function loadEverything(data, migrationData) {
   const [topology, conversion, population, whrData] = data;
 
-  console.log(dataYears);
-
-
+  const codeToName = {};
   const countryPop = {};
   const countryWHR = {};
   population.forEach((c) => countryPop[c.Country] = filterNaN(c));
   whrData.forEach((c) => countryWHR[c.country] = filterNaN(c));
+  conversion.forEach(c => codeToName[c.code3] = c.name);
+  store.set('codeToName', codeToName);
 
   plot.draw('#plot', 600, 420, plotData);
-  lines.draw('#lines', 1000, 420, dataYears, countryPop);
-  map.draw('#map', 1000, 420, topology, dataYears, countryPop);
+  lines.draw('#lines', 1000, 420, migrationData, countryPop);
+  map.draw('#map', 1000, 420, topology, migrationData, countryPop);
   chord.draw('#chord', 600, 420, chordData);
 
-  const codeToName = {};
-  conversion.forEach(c => codeToName[c.code3] = c.name);
-  //store.set('codeToName', codeToName);
-
-  ReactDOM.render(getSelect(dataYears, codeToName), document.getElementById('countrySelect'));
+  ReactDOM.render(getSelect(migrationData, codeToName), document.getElementById('countrySelect'));
   ReactDOM.render(<MigrationSwitch />, document.getElementById('migrationSwitch'));
   ReactDOM.render(<YearSlider />, document.getElementById('yearSlider'));
 }
