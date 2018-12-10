@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import store from 'store';
 import { createSVG } from '../helpers';
-import lines from './lines';
+import { lines, chord } from '../idioms';
 
 export default {
   draw: drawMap,
@@ -9,8 +9,7 @@ export default {
 };
 
 let mapSVG;
-let migrationData;
-let populationData;
+let migrationData, populationData;
 
 function mouseIn() { }
 
@@ -98,8 +97,10 @@ export function updateMap() {
       const dataYear = migrationData[year];
       if (dataYear[d.id] === undefined) return 'black'; // no data
       const migrants = Number(isEmigration ? dataYear['WORLD'][d.id] : dataYear[d.id]['Total']);
+      const pop = populationData[d.id][year] * 1000;
       return color(migrants);
     });
 
   lines.update();
+  chord.update();
 }

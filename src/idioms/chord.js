@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import store from 'store';
 import { createSVG } from '../helpers';
 
 export default {
@@ -7,80 +8,90 @@ export default {
 };
 
 let chordSVG;
+let selectedCountries;
+let migrationData;
+
+let outerRadius, innerRadius;
+
+function getChordMatrix(data) {
+  selectedCountries = store.get('selectedCountries') || ['PRT', 'DEU', 'BRA', 'ESP', 'SWE', 'ITA'];
+  const year = store.get('year') || 2010;
+  const matrix = [];
+
+  selectedCountries.forEach(c => {
+    matrix.push(selectedCountries.map(co => data[year][c][co]));
+  });
+
+  console.log(matrix);
+  return matrix;
+}
 
 export function drawChord(id, width, height, data) {
   chordSVG = createSVG(id, { width, height });
 
-  function groupTicks(d, step) {
-    const k = (d.endAngle - d.startAngle) / d.value;
-    return d3.range(0, d.value, step).map(value => {
-      return { value: value, angle: value * k + d.startAngle };
-    });
-  }
+  migrationData = data;
 
-  const
-    outerRadius = Math.min(width, height) * 0.5 - 30,
-    innerRadius = outerRadius - 20;
+  outerRadius = Math.min(width, height) * 0.5 - 30;
+  innerRadius = outerRadius - 20;
 
-  chordSVG
-    .attr('viewBox', [-width / 2, -height / 2, width, height])
-    .attr('font-size', 10)
-    .attr('font-family', 'sans-serif');
+  chordSVG.attr('viewBox', [-width / 2, -height / 2, width, height]);
 
-  const myChord = d3.chord().padAngle(0.05).sortSubgroups(d3.descending);
+  chordSVG.append('g')
+    .attr('class', 'nodes');
 
-  const chords = myChord(data);
+  chordSVG.append('g')
+    .attr('class', 'arcs')
+    .attr('fill-opacity', 0.8);
+
+  updateChord();
+}
+
+export function updateChord() {
+  const groupNodes = chordSVG.select('.nodes');
+  const groupArcs = chordSVG.select('.arcs');
+
+  groupNodes.selectAll('.node').remove();
+  groupArcs.selectAll('.arc').remove();
+
+  const myChord = d3.chord()
+    .padAngle(0.04)
+    .sortSubgroups(d3.descending);
+
+  const chords = myChord(getChordMatrix(migrationData));
   const ribbon = d3.ribbon().radius(innerRadius);
 
-  const formatValue = d3.formatPrefix(',.0', 1e3);
   const color = d3.scaleOrdinal()
-    .domain(d3.range(4))
-    .range(['#c6dbef', '#6baed6', '#2171b5', '#08306b']);
+    .domain(d3.range(9))
+    .range(d3.schemeBlues[9]);
 
   const arc = d3.arc()
     .innerRadius(innerRadius)
     .outerRadius(outerRadius);
 
-
-  const group = chordSVG.append('g')
-    .selectAll('g')
+  groupNodes.selectAll('g')
     .data(chords.groups)
-    .enter().append('g');
-
-  group.append('path')
-    .attr('fill', d => color(d.index))
-    .attr('stroke', d => d3.rgb(color(d.index)).darker())
-    .attr('d', arc);
-
-  const groupTick = group.append('g')
-    .selectAll('g')
-    .data(d => groupTicks(d, 1e3))
     .enter().append('g')
-    .attr('transform', d => `rotate(${d.angle * 180 / Math.PI - 90}) translate(${outerRadius},0)`);
+    .attr('class', 'node')
+    .append('path')
+    .attr('fill', d => color(d.index))
+    .attr('stroke', d => color(d.index))
+    .attr('d', arc)
+    .append('title').text(d => `${selectedCountries[d.index]}: ${d.value}`);
 
-  groupTick.append('line')
-    .attr('stroke', '#000')
-    .attr('x2', 6);
-
-  groupTick
-    .filter(d => d.value % 5e3 === 0)
-    .append('text')
-    .attr('x', 8)
-    .attr('dy', '.35em')
-    .attr('transform', d => d.angle > Math.PI ? 'rotate(180) translate(-16)' : null)
-    .attr('text-anchor', d => d.angle > Math.PI ? 'end' : null)
-    .text(d => formatValue(d.value));
-
-  chordSVG.append('g')
-    .attr('fill-opacity', 0.67)
-    .selectAll('path')
+  groupArcs.selectAll('path')
     .data(chords)
     .enter().append('path')
+    .attr('class', 'arc')
     .attr('d', ribbon)
     .attr('fill', d => color(d.target.index))
-    .attr('stroke', d => d3.rgb(color(d.target.index)).darker());
-}
+    .attr('stroke', d => d3.rgb(color(d.target.index)).darker())
+    .append('title').text(d => {
+      const c1 = selectedCountries[d.source.index];
+      const c2 = selectedCountries[d.target.index];
+      return `${d.source.value} ${c1} > ${c2} | ${d.target.value} ${c2} > ${c1} `;
+    });
 
-export function updateChord(id, data) {
+
+
 
 }

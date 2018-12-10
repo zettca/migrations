@@ -1,3 +1,13 @@
+/* ========== COMMON ========== */
+
+.tick text {
+  fill: white;
+}
+
+.tick line {
+  stroke: white;
+}
+
 /* ========== PLOT ========== */
 
 .axis-x {
@@ -13,13 +23,14 @@
 }
 
 .circles {
-  fill: #08306b;
-  stroke: #03132b;
+  fill: white;
+  stroke: silver;
   stroke-width: 0.8;
   opacity: 0.7;
 }
 
 .text {
+  fill: white;
   font-family: sans-serif;
   font-size: 10px;
 }

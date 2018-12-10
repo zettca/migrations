@@ -19,36 +19,27 @@ store.remove('isEmigration');
 
 // STATIC TEST DATA
 
-const chordData = [
-  [16, 16, 13, 12, 0, 6],
-  [1, 0, 12, 10, 6, 1],
-  [9, 10, 13, 0, 5, 5],
-  [15, 1, 14, 16, 9, 16],
-  [5, 10, 16, 16, 10, 0],
-  [9, 8, 2, 13, 13, 9]
-];
-
 const plotData = [
-  { 'name': 'A', 'x': 21, 'y': 110 },
-  { 'name': 'B', 'x': 22.8, 'y': 93 },
-  { 'name': 'C', 'x': 18.7, 'y': 175 },
-  { 'name': 'D', 'x': 14.3, 'y': 245 },
-  { 'name': 'E', 'x': 24.4, 'y': 62 },
-  { 'name': 'F', 'x': 14.7, 'y': 230 },
-  { 'name': 'G', 'x': 32.4, 'y': 66 },
-  { 'name': 'H', 'x': 30.4, 'y': 52 },
-  { 'name': 'I', 'x': 33.9, 'y': 65 },
-  { 'name': 'J', 'x': 15.5, 'y': 150 },
-  { 'name': 'K', 'x': 15.2, 'y': 150 },
-  { 'name': 'L', 'x': 13.3, 'y': 245 },
-  { 'name': 'M', 'x': 19.2, 'y': 175 },
-  { 'name': 'N', 'x': 27.3, 'y': 66 },
-  { 'name': 'O', 'x': 26, 'y': 91 },
-  { 'name': 'P', 'x': 30.4, 'y': 113 },
-  { 'name': 'Q', 'x': 15.8, 'y': 264 },
-  { 'name': 'R', 'x': 19.7, 'y': 175 },
-  { 'name': 'S', 'x': 15, 'y': 335 },
-  { 'name': 'T', 'x': 21.4, 'y': 109 }
+  { x: 21, y: 110 },
+  { x: 22.8, y: 93 },
+  { x: 18.7, y: 175 },
+  { x: 14.3, y: 245 },
+  { x: 24.4, y: 62 },
+  { x: 14.7, y: 230 },
+  { x: 32.4, y: 66 },
+  { x: 30.4, y: 52 },
+  { x: 33.9, y: 65 },
+  { x: 15.5, y: 150 },
+  { x: 15.2, y: 150 },
+  { x: 13.3, y: 245 },
+  { x: 19.2, y: 175 },
+  { x: 27.3, y: 66 },
+  { x: 26, y: 91 },
+  { x: 30.4, y: 113 },
+  { x: 15.8, y: 264 },
+  { x: 19.7, y: 175 },
+  { x: 15, y: 335 },
+  { x: 21.4, y: 109 }
 ];
 
 // DYNAMIC REAL DATA
@@ -59,8 +50,10 @@ Promise.all(years.map(year => tsv(`./data/migration/${year}.tsv`)))
     const migrationData = {};
     dataYearsList.forEach((yearData, i) => {
       migrationData[years[i]] = {};
-      yearData.forEach(countryData => migrationData[years[i]][countryData.Country] = countryData);
+      yearData.forEach(countryData => migrationData[years[i]][countryData.Country] = filterNaN(countryData));
     });
+
+    console.log(migrationData);
 
     Promise.all([
       json('./data/topology.json'),
@@ -83,10 +76,11 @@ function loadEverything(data, migrationData) {
   conversion.forEach(c => codeToName[c.code3] = c.name);
   store.set('codeToName', codeToName);
 
+  // order is important, sadly
+  chord.draw('#chord', 600, 420, migrationData);
   plot.draw('#plot', 600, 420, plotData);
   lines.draw('#lines', 1000, 420, migrationData, countryPop);
   map.draw('#map', 1000, 420, topology, migrationData, countryPop);
-  chord.draw('#chord', 600, 420, chordData);
 
   ReactDOM.render(getSelect(migrationData, codeToName), document.getElementById('countrySelect'));
   ReactDOM.render(<MigrationSwitch />, document.getElementById('migrationSwitch'));
