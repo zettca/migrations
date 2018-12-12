@@ -78,30 +78,25 @@ function handleData(data) {
   lines.draw('#lines', 1000, 420, migrationDiff, countryPop);
   map.draw('#map', 1000, 420, topology, migrationDiff, countryPop);
 
-  ReactDOM.render(getSelect(migrationDiff, codeToName), document.getElementById('countrySelect'));
+  ReactDOM.render(makeSelect(migrationDiff, codeToName), document.getElementById('countrySelect'));
   ReactDOM.render(<MigrationSwitch />, document.getElementById('migrationSwitch'));
   ReactDOM.render(<YearSlider />, document.getElementById('yearSlider'));
 }
 
-function getSelect(data, codeToName, value) {
+function makeSelect(migrationData, codeToName) {
+  function countryChange(selection) {
+    const countries = new Set(store.get('selectedCountries'));
+    selection.forEach(el => countries.add(el.value));
+    store.set('selectedCountries', Array.from(countries));
+    map.update();
+  }
+
   const countries = [];
-  Object.keys(data[2000]).forEach(key => {
-    if (key.length === 3) {
-      countries.push({ value: key, label: codeToName[key], /*group: c.region*/ });
-    }
+  Object.keys(migrationData[2000]).forEach(key => {
+    if (key.length !== 3) return;
+    countries.push({ value: key, label: codeToName[key] });
   });
 
-  return (
-    <CountrySelect
-      value={value}
-      countries={countries}
-      onChange={countryChange} />
+  return (<CountrySelect countries={countries} onChange={countryChange} />
   );
-}
-
-function countryChange(selection) {
-  const countries = new Set(store.get('selectedCountries'));
-  selection.forEach(el => countries.add(el.value));
-  store.set('selectedCountries', Array.from(countries));
-  map.update();
 }
