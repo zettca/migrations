@@ -53,10 +53,14 @@
 }
 
 .countries path {
-  stroke: #ccf;
+  stroke: transparent;
   opacity: 0.9;
   stroke-width: 0.4;
   stroke-opacity: 1;
+}
+
+.countries .selected {
+  opacity: 1;
 }
 
 .countries path:hover {
@@ -75,3 +79,17 @@
 }
 
 /* ========== CHORD ========== */
+
+.arcs {
+  fill-opacity: 0.8;
+}
+
+path.fade {
+  fill-opacity: .1;
+  stroke-opacity: .1;
+}
+
+path.show {
+  fill-opacity: 1;
+  stroke-opacity: 1;
+}

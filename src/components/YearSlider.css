@@ -1,0 +1,19 @@
+.rc-slider-mark-text {
+  font-size: 1rem;
+}
+
+.rc-slider-mark-text-active {
+  color: #FF8A65;
+  font-size: 1.2rem;
+}
+
+.rc-slider-rail, .rc-slider-step {
+  background-color: #cccccc;
+}
+
+.rc-slider-handle {
+  height: 16px;
+  width: 16px;
+  margin-top: -6px;
+  background-color: #FF8A65 !important;
+}

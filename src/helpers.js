@@ -1,8 +1,15 @@
-import { select } from 'd3';
+import * as d3 from 'd3';
 
 export function tryNumber(value) {
   return Number(value) || value;
 }
+
+export const numColors = 9;
+
+export const colors = {
+  map: d3.schemeRdYlBu[numColors],
+  selection: d3.schemeGreens[numColors]
+};
 
 export function filterNaN(obj) {
   const res = {};
@@ -19,7 +26,7 @@ export function filterNaN(obj) {
 }
 
 export function createSVG(id, dims = { width: 400, height: 400 }, margins) {
-  const svg = select(id).append('svg')
+  const svg = d3.select(id).append('svg')
     .attr('width', dims.width)
     .attr('height', dims.height);
 

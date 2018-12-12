@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import store from 'store';
-import { createSVG } from '../helpers';
+import { createSVG, colors, numColors } from '../helpers';
 import { lines, chord } from '../idioms';
 
 export default {
@@ -35,10 +35,6 @@ function clicked(d) {
 
   updateMap();
 }
-
-const color = d3.scaleThreshold()
-  .domain([1, 10, 100, 250, 500, 1000, 2500, 5000, 10000].map(n => n * 1000))
-  .range(d3.schemeGreys[9]);
 
 export function drawMap(id, width, height, topology, data, population) {
   mapSVG = createSVG(id, { width, height });
@@ -83,30 +79,30 @@ export function updateMap() {
   console.log('updating map...');
 
   const selectedCountries = store.get('selectedCountries') || [];
-  const num = 9;
-  const colors = d3.schemeSpectral[num];
-
-  const year = store.get('year') || 2010;
   const isEmigration = store.get('isEmigration');
+  const year = store.get('year') || 2010;
+  const dataYear = migrationData[year];
 
   function getMigrants(d) {
-    const dataYear = migrationData[year];
     if (dataYear[d.id] === undefined) return 0; // no data
     const migrants = isEmigration ? dataYear['WORLD'][d.id] : dataYear[d.id]['Total'];
     const pop = populationData[d.id][year] * 1000;
-
     return migrants || 0;
   }
 
+  const color = d3.scaleThreshold()
+    .domain([-10, -5, -2, -1, 0, 1, 2, 5, 10].map(n => n * 100 * 1000))
+    .range(colors.map);
+
   mapSVG.selectAll('path')
-    //.transition().duration(600)
+    // .transition().duration(600)
     .style('fill', (d) => color(getMigrants(d)))
     .select('title').text(d => `${d.id}: ${d3.format('~s')(getMigrants(d))}`);
 
   d3.selectAll('.selected').classed('selected', false);
   selectedCountries.forEach((countryID, i) => {
     d3.select('path#' + countryID)
-      .style('fill', colors[i % num])
+      .style('fill', colors.selection[i % numColors])
       .classed('selected', true);
   });
 

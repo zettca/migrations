@@ -31,20 +31,18 @@ nav {
 }
 
 .control:nth-child(1) {
-  width: 35%;
+  width: 40%;
+  padding-right: 1rem;
 }
 
 .control:nth-child(2) {
-  text-align: center;
-  width: 5%;
+  width: 50%;
+  overflow: hidden;
 }
 
 .control:nth-child(3) {
-  width: 40%;
-}
-
-.control:nth-child(4) {
-  width: 15%;
+  text-align: center;
+  width: 5%;
 }
 
 .idiom {

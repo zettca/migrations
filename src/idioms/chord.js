@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import store from 'store';
-import { createSVG } from '../helpers';
+import { createSVG, colors } from '../helpers';
 
 export default {
   draw: drawChord,
@@ -13,7 +13,7 @@ let migrationData;
 
 let outerRadius, innerRadius;
 
-function getChordMatrix(data) {
+function getChordMatrix() {
   selectedCountries = store.get('selectedCountries') || ['PRT', 'DEU', 'BRA', 'ESP', 'SWE', 'ITA'];
   const isEmigration = store.get('isEmigration');
   const year = store.get('year') || 2010;
@@ -22,13 +22,14 @@ function getChordMatrix(data) {
   function getValue(c, c2) {
     let val;
     try {
-      val = isEmigration ? data[year][c2][c] : data[year][c][c2];
+      val = isEmigration ? migrationData[year][c2][c] : migrationData[year][c][c2];
     } catch (error) {
       val = 0;
     }
     return val || 0;
   }
 
+  const allCountries = Object.keys(migrationData[year]['WORLD']);
   selectedCountries.forEach(c => {
     matrix.push(selectedCountries.map(c2 => getValue(c, c2)));
   });
@@ -41,17 +42,13 @@ export function drawChord(id, width, height, data) {
 
   migrationData = data;
 
-  outerRadius = Math.min(width, height) * 0.5 - 30;
+  outerRadius = Math.min(width, height) * 0.5;
   innerRadius = outerRadius - 20;
 
   chordSVG.attr('viewBox', [-width / 2, -height / 2, width, height]);
 
-  chordSVG.append('g')
-    .attr('class', 'nodes');
-
-  chordSVG.append('g')
-    .attr('class', 'arcs')
-    .attr('fill-opacity', 0.8);
+  chordSVG.append('g').attr('class', 'nodes');
+  chordSVG.append('g').attr('class', 'arcs');
 
   updateChord();
 }
@@ -66,15 +63,14 @@ export function updateChord() {
   groupArcs.selectAll('.arc').remove();
 
   const myChord = d3.chord()
-    .padAngle(0.04)
-    .sortSubgroups(d3.descending);
+    .padAngle(0.04);
 
-  const chords = myChord(getChordMatrix(migrationData));
+  const chords = myChord(getChordMatrix());
   const ribbon = d3.ribbon().radius(innerRadius);
 
   const color = d3.scaleOrdinal()
     .domain(d3.range(9))
-    .range(d3.schemeSpectral[9]);
+    .range(colors.selection);
 
   const arc = d3.arc()
     .innerRadius(innerRadius)
@@ -88,6 +84,8 @@ export function updateChord() {
     .attr('fill', (d, i) => color(i))
     .attr('stroke', (d, i) => color(i))
     .attr('d', arc)
+    .on('mouseover', mouseover)
+    .on('mouseout', mouseout)
     .append('title').text(d => `${selectedCountries[d.index]}: ${d3.format('~s')(d.value)}`);
 
   groupArcs.selectAll('path')
@@ -97,13 +95,36 @@ export function updateChord() {
     .attr('d', ribbon)
     .attr('fill', d => color(d.target.index))
     .attr('stroke', d => d3.rgb(color(d.target.index)).darker())
-    .append('title').text(d => {
-      const isEmigration = store.get('isEmigration');
-      const countryOrder = isEmigration ? [d.source, d.target] : [d.target, d.source];
-      const valueOrder = [d.source, d.target];
-      const [c1, c2] = countryOrder.map(el => selectedCountries[el.index]);
-      const [v1, v2] = valueOrder.map(el => d3.format('~s')(el.value));
-      return `${c1} > ${c2}: ${v1}\n${c2} > ${c1}: ${v2}`;
-    });
+    .on('mouseover', log)
+    .on('mouseout', log)
+    .append('title').text(d => makeTitle(d));
+
+  function makeTitle(d) {
+    const isEmigration = store.get('isEmigration');
+    const countryOrder = isEmigration ? [d.source, d.target] : [d.target, d.source];
+    const valueOrder = [d.source, d.target];
+    const [c1, c2] = countryOrder.map(el => selectedCountries[el.index]);
+    const [v1, v2] = valueOrder.map(el => d3.format('~s')(el.value));
+    return `${c1} > ${c2}: ${v1}\n${c2} > ${c1}: ${v2}`;
+  }
+
+  function log(d, i) {
+    console.log(d.source);
+  }
+
+  function mouseover(d, i) {
+    console.log(d);
+
+    const t = d.value; // threshold
+
+    const s = groupArcs.selectAll('.arc');
+    s.classed('fade', (p) => p.source.index !== i && p.target.index !== i);
+    s.classed('show', (p) => p.source.index === i);
+  }
+
+  function mouseout(d, i) {
+    groupArcs.selectAll('.arc.show').classed('show', false);
+    groupArcs.selectAll('.arc.fade').classed('fade', false);
+  }
 
 }

@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import { tsv, json } from 'd3-fetch';
 
 import YearSlider from './components/YearSlider';
+//import EventSelect from './components/EventSelect';
 import CountrySelect from './components/CountrySelect';
 import MigrationSwitch from './components/MigrationSwitch';
 import { chord, plot, lines, map } from './idioms';
@@ -17,7 +18,7 @@ import './idioms.css';
 store.remove('selectedCountries');
 store.remove('isEmigration');
 
-store.set('selectedCountries', ['PRT', 'SWE', 'UKR']);
+store.set('selectedCountries', ['PRT', 'ESP', 'FRA', 'DEU']);
 
 // STATIC TEST DATA
 
@@ -79,6 +80,7 @@ function handleData(data) {
   map.draw('#map', 1000, 420, topology, migrationDiff, countryPop);
 
   ReactDOM.render(makeSelect(migrationDiff, codeToName), document.getElementById('countrySelect'));
+  // ReactDOM.render(<EventSelect />, document.getElementById('eventList'));
   ReactDOM.render(<MigrationSwitch />, document.getElementById('migrationSwitch'));
   ReactDOM.render(<YearSlider />, document.getElementById('yearSlider'));
 }

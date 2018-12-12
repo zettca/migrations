@@ -4,6 +4,7 @@ import Slider from 'rc-slider';
 import { map } from '../idioms';
 
 import 'rc-slider/assets/index.css';
+import './YearSlider.css';
 
 const marks = {
   1995: '1995',
@@ -15,24 +16,25 @@ const marks = {
 };
 
 function yearChange(params) {
-  console.log(params);
   store.set('year', params);
   map.update();
 }
 
 export default class YearSlider extends React.PureComponent {
   render() {
-    const style = { padding: '0.6em 2em 0' };
+    const style = { padding: '0.4em 2em 0' };
 
     return (
       <div style={style}>
         <Slider
           min={1995}
           max={2017}
+          included={false}
           marks={marks}
           step={null}
           onChange={yearChange}
-          defaultValue={2010} />
+          defaultValue={2010}
+          handleStyle={{ border: 'white', backgroundColor: 'silver' }} />
       </div>
     );
   }

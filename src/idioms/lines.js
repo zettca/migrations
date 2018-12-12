@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import store from 'store';
-import { createSVG } from '../helpers';
+import { createSVG, colors } from '../helpers';
 
 export default {
   draw: drawLines,
@@ -58,14 +58,15 @@ export function updateLines() {
   const dataset = loadDataset();
 
   const flatData = dataset.reduce((acc, d) => acc.concat(d), []);
-  const getDomain = (dataset, fn) => [d3.min(dataset, fn), d3.max(dataset, fn)];
+  const xDomain = (data, fn) => [d3.min(data, fn), d3.max(data, fn)];
+  const yDomain = (data, fn) => [Math.min(0, d3.min(data, fn)), d3.max(data, fn)];
 
   const xScale = d3.scaleLinear()
-    .domain(getDomain(flatData, d => d.year)).nice()
+    .domain(xDomain(flatData, d => d.year)).nice()
     .range([0, width]);
 
   const yScale = d3.scaleLinear()
-    .domain(getDomain(flatData, d => d.value)).nice()
+    .domain(yDomain(flatData, d => d.value)).nice()
     .range([height, 0]);
 
   const xAxis = d3.axisBottom(xScale)
@@ -98,7 +99,7 @@ export function updateLines() {
 
   for (let i = 0; i < dataset.length; i++) {
     const num = 6;
-    const color = d3.schemeRdYlGn[num][i % num];
+    const color = colors.selection[i % num];
 
     linesSVG.append('path')
       .datum(dataset[i])
