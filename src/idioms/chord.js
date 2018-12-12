@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import store from 'store';
-import { createSVG, colors } from '../helpers';
+import { createSVG, colors, countryName } from '../helpers';
 
 export default {
   draw: drawChord,
@@ -14,7 +14,8 @@ let migrationData;
 let outerRadius, innerRadius;
 
 function getChordMatrix() {
-  selectedCountries = store.get('selectedCountries') || ['PRT', 'DEU', 'BRA', 'ESP', 'SWE', 'ITA'];
+  selectedCountries = /*store.get('selectedCountries') ||*/ Object.keys(migrationData[2010]['WORLD']).slice(1, 40);
+
   const isEmigration = store.get('isEmigration');
   const year = store.get('year') || 2010;
   const matrix = [];
@@ -29,7 +30,6 @@ function getChordMatrix() {
     return val || 0;
   }
 
-  const allCountries = Object.keys(migrationData[year]['WORLD']);
   selectedCountries.forEach(c => {
     matrix.push(selectedCountries.map(c2 => getValue(c, c2)));
   });
@@ -62,8 +62,7 @@ export function updateChord() {
   groupNodes.selectAll('.node').remove();
   groupArcs.selectAll('.arc').remove();
 
-  const myChord = d3.chord()
-    .padAngle(0.04);
+  const myChord = d3.chord().padAngle(0.02);
 
   const chords = myChord(getChordMatrix());
   const ribbon = d3.ribbon().radius(innerRadius);
@@ -86,7 +85,7 @@ export function updateChord() {
     .attr('d', arc)
     .on('mouseover', mouseover)
     .on('mouseout', mouseout)
-    .append('title').text(d => `${selectedCountries[d.index]}: ${d3.format('~s')(d.value)}`);
+    .append('title').text(d => `${countryName(selectedCountries[d.index])}: ${d3.format('~s')(d.value)}`);
 
   groupArcs.selectAll('path')
     .data(chords)
@@ -94,16 +93,16 @@ export function updateChord() {
     .attr('class', 'arc')
     .attr('d', ribbon)
     .attr('fill', d => color(d.target.index))
-    .attr('stroke', d => d3.rgb(color(d.target.index)).darker())
-    .on('mouseover', log)
-    .on('mouseout', log)
+    // .attr('stroke', d => d3.rgb(color(d.target.index)).darker())
+    // .on('mouseover', log)
+    // .on('mouseout', log)
     .append('title').text(d => makeTitle(d));
 
   function makeTitle(d) {
     const isEmigration = store.get('isEmigration');
     const countryOrder = isEmigration ? [d.source, d.target] : [d.target, d.source];
     const valueOrder = [d.source, d.target];
-    const [c1, c2] = countryOrder.map(el => selectedCountries[el.index]);
+    const [c1, c2] = countryOrder.map(el => countryName(selectedCountries[el.index]));
     const [v1, v2] = valueOrder.map(el => d3.format('~s')(el.value));
     return `${c1} > ${c2}: ${v1}\n${c2} > ${c1}: ${v2}`;
   }

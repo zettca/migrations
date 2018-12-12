@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import store from 'store';
-import { createSVG, colors, numColors } from '../helpers';
+import { createSVG, colors, numColors, countryName } from '../helpers';
 import { lines, chord } from '../idioms';
 
 export default {
@@ -97,7 +97,7 @@ export function updateMap() {
   mapSVG.selectAll('path')
     // .transition().duration(600)
     .style('fill', (d) => color(getMigrants(d)))
-    .select('title').text(d => `${d.id}: ${d3.format('~s')(getMigrants(d))}`);
+    .select('title').text(d => `${countryName(d.id)}: ${d3.format('~s')(getMigrants(d))}`);
 
   d3.selectAll('.selected').classed('selected', false);
   selectedCountries.forEach((countryID, i) => {

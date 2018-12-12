@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import store from 'store';
 
 export function tryNumber(value) {
   return Number(value) || value;
@@ -7,9 +8,14 @@ export function tryNumber(value) {
 export const numColors = 9;
 
 export const colors = {
-  map: d3.schemeRdYlBu[numColors],
-  selection: d3.schemeGreens[numColors]
+  map: d3.schemeBlues[numColors],
+  selection: d3.schemeReds[numColors]
 };
+
+export function countryName(code) {
+  const codeToName = store.get('codeToName');
+  return codeToName[code];
+}
 
 export function filterNaN(obj) {
   const res = {};

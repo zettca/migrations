@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import store from 'store';
-import { createSVG, colors } from '../helpers';
+import { createSVG, colors, numColors, countryName } from '../helpers';
 
 export default {
   draw: drawLines,
@@ -13,15 +13,16 @@ let linesSVG;
 let svgDims;
 let migrationData;
 let populationData;
+let selectedCountries;
 
 function loadDataset() {
   const dataset = [];
-  const countries = store.get('selectedCountries');
-  if (!countries || countries.length === 0) return [];
+  selectedCountries = store.get('selectedCountries');
+  if (!selectedCountries || selectedCountries.length === 0) return [];
 
   const isEmigration = store.get('isEmigration');
 
-  for (let c of countries) {
+  for (let c of selectedCountries) {
     const country = [];
     for (let year in migrationData) {
       const dataYear = migrationData[year];
@@ -98,8 +99,8 @@ export function updateLines() {
     .call(yAxis);
 
   for (let i = 0; i < dataset.length; i++) {
-    const num = 6;
-    const color = colors.selection[i % num];
+    const color = colors.selection[i % numColors];
+    const name = countryName(selectedCountries[i]);
 
     linesSVG.append('path')
       .datum(dataset[i])
@@ -115,6 +116,7 @@ export function updateLines() {
       .enter().append('circle')
       .attr('cx', (d) => xScale(d.year))
       .attr('cy', (d) => yScale(d.value))
-      .attr('r', 5);
+      .attr('r', 5)
+      .append('title').text(d => `${name} (${d.year}): ${d3.format('~s')(d.value)}`);
   }
 }
