@@ -7,12 +7,12 @@ export default {
   update: updateLines,
 };
 
-let group;
+const margin = { top: 10, right: 20, bottom: 20, left: 40 };
+
+let linesSVG;
 let svgDims;
 let migrationData;
 let populationData;
-
-const margin = { top: 10, right: 20, bottom: 20, left: 40 };
 
 function loadDataset() {
   const dataset = [];
@@ -41,14 +41,16 @@ function loadDataset() {
 
 export function drawLines(id, width, height, data, pop) {
   svgDims = { width, height };
-  group = createSVG(id, { width, height }, margin);
+  linesSVG = createSVG(id, { width, height }, margin);
   migrationData = data;
   populationData = pop;
 
-  updateLines(width, height);
+  updateLines();
 }
 
 export function updateLines() {
+  console.log('updating lines...');
+
   const
     width = svgDims.width - margin.left - margin.right,
     height = svgDims.height - margin.top - margin.bottom;
@@ -56,7 +58,7 @@ export function updateLines() {
   const dataset = loadDataset();
 
   const flatData = dataset.reduce((acc, d) => acc.concat(d), []);
-  const getDomain = (dataset, func) => [d3.min(dataset, func), d3.max(dataset, func)];
+  const getDomain = (dataset, fn) => [d3.min(dataset, fn), d3.max(dataset, fn)];
 
   const xScale = d3.scaleLinear()
     .domain(getDomain(flatData, d => d.year)).nice()
@@ -78,19 +80,19 @@ export function updateLines() {
 
   // CLEAR OLD ELEMENTS
 
-  group.selectAll('.dots').remove();
-  group.selectAll('.line').remove();
-  group.select('.xAxis').remove();
-  group.select('.yAxis').remove();
+  linesSVG.selectAll('.dots').remove();
+  linesSVG.selectAll('.line').remove();
+  linesSVG.select('.xAxis').remove();
+  linesSVG.select('.yAxis').remove();
 
   // CREATE NEW ELEMENTS
 
-  group.append('g')
+  linesSVG.append('g')
     .attr('class', 'xAxis')
     .attr('transform', `translate(0,${height})`)
     .call(xAxis);
 
-  group.append('g')
+  linesSVG.append('g')
     .attr('class', 'yAxis')
     .call(yAxis);
 
@@ -98,13 +100,13 @@ export function updateLines() {
     const num = 6;
     const color = d3.schemeRdYlGn[num][i % num];
 
-    group.append('path')
+    linesSVG.append('path')
       .datum(dataset[i])
       .attr('stroke', color)
       .attr('class', 'line')
       .attr('d', line);
 
-    group.append('g')
+    linesSVG.append('g')
       .attr('class', 'dots')
       .attr('fill', color)
       .attr('stroke', color)

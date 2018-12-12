@@ -26,6 +26,9 @@ function contextMenu(d) {
 }
 
 function clicked(d) {
+  const forbidden = ['UNK', 'TWN', 'ATA'];
+  if (forbidden.includes(d.id)) return;
+
   const selectedCountries = new Set(store.get('selectedCountries'));
   selectedCountries.add(d.id);
   store.set('selectedCountries', Array.from(selectedCountries));
@@ -35,7 +38,7 @@ function clicked(d) {
 
 const color = d3.scaleThreshold()
   .domain([1, 10, 100, 250, 500, 1000, 2500, 5000, 10000].map(n => n * 1000))
-  .range(d3.schemeBlues[9]);
+  .range(d3.schemeGreys[9]);
 
 export function drawMap(id, width, height, topology, data, population) {
   mapSVG = createSVG(id, { width, height });
@@ -77,9 +80,28 @@ export function drawMap(id, width, height, topology, data, population) {
 }
 
 export function updateMap() {
+  console.log('updating map...');
+
   const selectedCountries = store.get('selectedCountries') || [];
-  const num = 6;
-  const colors = d3.schemeRdYlGn[num];
+  const num = 9;
+  const colors = d3.schemeSpectral[num];
+
+  const year = store.get('year') || 2010;
+  const isEmigration = store.get('isEmigration');
+
+  function getMigrants(d) {
+    const dataYear = migrationData[year];
+    if (dataYear[d.id] === undefined) return 0; // no data
+    const migrants = isEmigration ? dataYear['WORLD'][d.id] : dataYear[d.id]['Total'];
+    const pop = populationData[d.id][year] * 1000;
+
+    return migrants || 0;
+  }
+
+  mapSVG.selectAll('path')
+    //.transition().duration(600)
+    .style('fill', (d) => color(getMigrants(d)))
+    .select('title').text(d => `${d.id}: ${d3.format('~s')(getMigrants(d))}`);
 
   d3.selectAll('.selected').classed('selected', false);
   selectedCountries.forEach((countryID, i) => {
@@ -87,19 +109,6 @@ export function updateMap() {
       .style('fill', colors[i % num])
       .classed('selected', true);
   });
-
-  const year = store.get('year') || 2010;
-  const isEmigration = store.get('isEmigration');
-
-  mapSVG.selectAll('path:not(.selected)')
-    //.transition().duration(600)
-    .style('fill', (d) => {
-      const dataYear = migrationData[year];
-      if (dataYear[d.id] === undefined) return 'black'; // no data
-      const migrants = Number(isEmigration ? dataYear['WORLD'][d.id] : dataYear[d.id]['Total']);
-      const pop = populationData[d.id][year] * 1000;
-      return color(migrants);
-    });
 
   lines.update();
   chord.update();

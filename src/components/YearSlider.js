@@ -6,7 +6,6 @@ import { map } from '../idioms';
 import 'rc-slider/assets/index.css';
 
 const marks = {
-  1990: '1990',
   1995: '1995',
   2000: '2000',
   2005: '2005',
@@ -28,12 +27,12 @@ export default class YearSlider extends React.PureComponent {
     return (
       <div style={style}>
         <Slider
-          min={1990}
+          min={1995}
           max={2017}
           marks={marks}
           step={null}
           onChange={yearChange}
-          defaultValue={2005} />
+          defaultValue={2010} />
       </div>
     );
   }

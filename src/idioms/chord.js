@@ -15,14 +15,24 @@ let outerRadius, innerRadius;
 
 function getChordMatrix(data) {
   selectedCountries = store.get('selectedCountries') || ['PRT', 'DEU', 'BRA', 'ESP', 'SWE', 'ITA'];
+  const isEmigration = store.get('isEmigration');
   const year = store.get('year') || 2010;
   const matrix = [];
 
+  function getValue(c, c2) {
+    let val;
+    try {
+      val = isEmigration ? data[year][c2][c] : data[year][c][c2];
+    } catch (error) {
+      val = 0;
+    }
+    return val || 0;
+  }
+
   selectedCountries.forEach(c => {
-    matrix.push(selectedCountries.map(co => data[year][c][co]));
+    matrix.push(selectedCountries.map(c2 => getValue(c, c2)));
   });
 
-  console.log(matrix);
   return matrix;
 }
 
@@ -47,6 +57,8 @@ export function drawChord(id, width, height, data) {
 }
 
 export function updateChord() {
+  console.log('updating chord...');
+
   const groupNodes = chordSVG.select('.nodes');
   const groupArcs = chordSVG.select('.arcs');
 
@@ -62,7 +74,7 @@ export function updateChord() {
 
   const color = d3.scaleOrdinal()
     .domain(d3.range(9))
-    .range(d3.schemeBlues[9]);
+    .range(d3.schemeSpectral[9]);
 
   const arc = d3.arc()
     .innerRadius(innerRadius)
@@ -73,10 +85,10 @@ export function updateChord() {
     .enter().append('g')
     .attr('class', 'node')
     .append('path')
-    .attr('fill', d => color(d.index))
-    .attr('stroke', d => color(d.index))
+    .attr('fill', (d, i) => color(i))
+    .attr('stroke', (d, i) => color(i))
     .attr('d', arc)
-    .append('title').text(d => `${selectedCountries[d.index]}: ${d.value}`);
+    .append('title').text(d => `${selectedCountries[d.index]}: ${d3.format('~s')(d.value)}`);
 
   groupArcs.selectAll('path')
     .data(chords)
@@ -86,12 +98,12 @@ export function updateChord() {
     .attr('fill', d => color(d.target.index))
     .attr('stroke', d => d3.rgb(color(d.target.index)).darker())
     .append('title').text(d => {
-      const c1 = selectedCountries[d.source.index];
-      const c2 = selectedCountries[d.target.index];
-      return `${d.source.value} ${c1} > ${c2} | ${d.target.value} ${c2} > ${c1} `;
+      const isEmigration = store.get('isEmigration');
+      const countryOrder = isEmigration ? [d.source, d.target] : [d.target, d.source];
+      const valueOrder = [d.source, d.target];
+      const [c1, c2] = countryOrder.map(el => selectedCountries[el.index]);
+      const [v1, v2] = valueOrder.map(el => d3.format('~s')(el.value));
+      return `${c1} > ${c2}: ${v1}\n${c2} > ${c1}: ${v2}`;
     });
-
-
-
 
 }

@@ -7,7 +7,7 @@ import YearSlider from './components/YearSlider';
 import CountrySelect from './components/CountrySelect';
 import MigrationSwitch from './components/MigrationSwitch';
 import { chord, plot, lines, map } from './idioms';
-import { filterNaN } from './helpers';
+import { filterNaN, getMigrationDiff } from './helpers';
 
 import './index.css';
 import './idioms.css';
@@ -16,6 +16,8 @@ import './idioms.css';
 
 store.remove('selectedCountries');
 store.remove('isEmigration');
+
+store.set('selectedCountries', ['PRT', 'SWE', 'UKR']);
 
 // STATIC TEST DATA
 
@@ -44,29 +46,23 @@ const plotData = [
 
 // DYNAMIC REAL DATA
 
-const years = [1990, 1995, 2000, 2005, 2010, 2015, 2017];
-Promise.all(years.map(year => tsv(`./data/migration/${year}.tsv`)))
-  .then(dataYearsList => {
-    const migrationData = {};
-    dataYearsList.forEach((yearData, i) => {
-      migrationData[years[i]] = {};
-      yearData.forEach(countryData => migrationData[years[i]][countryData.Country] = filterNaN(countryData));
-    });
+const filesPromise = [
+  json('./data/topology.json'),
+  json('./data/migrations.json'),
+  tsv('./data/conversion.tsv'),
+  tsv('./data/population.tsv'),
+  tsv('./data/whr2017.tsv'),
+];
 
-    console.log(migrationData);
+Promise.all(filesPromise).then((dataResults) => handleData(dataResults));
 
-    Promise.all([
-      json('./data/topology.json'),
-      tsv('./data/conversion.tsv'),
-      tsv('./data/population.tsv'),
-      tsv('./data/whr2017.tsv'),
-    ]).then((dataResults) => {
-      loadEverything(dataResults, migrationData);
-    });
-  });
+function handleData(data) {
+  const [topology, migrationData, conversion, population, whrData] = data;
 
-function loadEverything(data, migrationData) {
-  const [topology, conversion, population, whrData] = data;
+  console.log(migrationData);
+  const migrationDiff = getMigrationDiff(migrationData);
+
+  console.log(migrationDiff);
 
   const codeToName = {};
   const countryPop = {};
@@ -79,17 +75,17 @@ function loadEverything(data, migrationData) {
   // order is important, sadly
   chord.draw('#chord', 600, 420, migrationData);
   plot.draw('#plot', 600, 420, plotData);
-  lines.draw('#lines', 1000, 420, migrationData, countryPop);
-  map.draw('#map', 1000, 420, topology, migrationData, countryPop);
+  lines.draw('#lines', 1000, 420, migrationDiff, countryPop);
+  map.draw('#map', 1000, 420, topology, migrationDiff, countryPop);
 
-  ReactDOM.render(getSelect(migrationData, codeToName), document.getElementById('countrySelect'));
+  ReactDOM.render(getSelect(migrationDiff, codeToName), document.getElementById('countrySelect'));
   ReactDOM.render(<MigrationSwitch />, document.getElementById('migrationSwitch'));
   ReactDOM.render(<YearSlider />, document.getElementById('yearSlider'));
 }
 
 function getSelect(data, codeToName, value) {
   const countries = [];
-  Object.keys(data[1990]).forEach(key => {
+  Object.keys(data[2000]).forEach(key => {
     if (key.length === 3) {
       countries.push({ value: key, label: codeToName[key], /*group: c.region*/ });
     }
