@@ -111,5 +111,5 @@ export function updateMap() {
 
   lines.update();
   chord.update();
-  plot.update();
+  //plot.update();
 }

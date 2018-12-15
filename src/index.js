@@ -7,7 +7,7 @@ import YearSlider from './components/YearSlider';
 //import EventSelect from './components/EventSelect';
 import CountrySelect from './components/CountrySelect';
 import MigrationSwitch from './components/MigrationSwitch';
-import { chord, plot, lines, map } from './idioms';
+import { chord, lines, map } from './idioms';
 import { byId, filterNaN, getMigrationDiff } from './helpers';
 
 import './index.css';
@@ -17,24 +17,7 @@ import './idioms.css';
 
 store.remove('selectedCountries');
 store.remove('isEmigration');
-
 store.set('selectedCountries', ['PRT', 'ESP', 'FRA', 'DEU']);
-
-// html binds
-
-const toggle = byId('graphToggle');
-const linesEl = byId('lines');
-const plotEl = byId('plot');
-toggle.onclick = (e) => {
-
-  if (linesEl.hidden) {
-    linesEl.hidden = false;
-    plotEl.hidden = true;
-  } else {
-    linesEl.hidden = true;
-    plotEl.hidden = false;
-  }
-};
 
 // DYNAMIC REAL DATA
 
@@ -52,14 +35,6 @@ function handleData(data) {
   const [topology, migrationData, conversion, population, whrData] = data;
 
   const migrationDiff = getMigrationDiff(migrationData);
-  const whrDataObj = {};
-  whrData.forEach(entry => {
-    if (whrDataObj[entry.country] === undefined) {
-      whrDataObj[entry.country] = {};
-    }
-    whrDataObj[entry.country][entry.year] = filterNaN(entry);
-  });
-  console.log(whrDataObj);
 
   const codeToName = {};
   const countryPop = {};
@@ -69,14 +44,11 @@ function handleData(data) {
   conversion.forEach(c => codeToName[c.code3] = c.name);
   store.set('codeToName', codeToName);
 
-
   // order is important, sadly
   chord.draw('#chord', migrationData);
-  plot.draw('#plot', whrDataObj);
-  lines.draw('#lines', migrationDiff, countryPop);
+  //plot.draw('#plot', whrData);
+  lines.draw('#lines', migrationDiff, whrData, countryPop);
   map.draw('#map', topology, migrationDiff, countryPop);
-
-  plotEl.hidden = true;
 
   ReactDOM.render(makeSelect(migrationDiff, codeToName), byId('countrySelect'));
   // ReactDOM.render(<EventSelect />, byId('eventList'));

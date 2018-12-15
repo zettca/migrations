@@ -30,6 +30,17 @@ export function filterNaN(obj) {
   return res;
 }
 
+export function parseNaN(obj) {
+  const res = {};
+
+  for (const key in obj) {
+    const num = Number(obj[key]);
+    res[key] = num || obj[key];
+  }
+
+  return res;
+}
+
 export function byId(id) {
   return document.getElementById(id);
 }
