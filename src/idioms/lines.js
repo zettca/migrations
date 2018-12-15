@@ -175,6 +175,7 @@ export function updateLines() {
       .attr('stroke', color)
       .attr('cx', d => xScale(d.year))
       .attr('cy', d => yScale2(d[metric]))
-      .attr('r', 5);
+      .attr('r', 5)
+      .append('title').text(d => `${name} (${d.year}): ${d[metric]} ${metric}`);
   }
 }

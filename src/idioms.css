@@ -8,29 +8,40 @@
   stroke: white;
 }
 
-/* ========== PLOT ========== */
+/* ========== LINES/PLOT ========== */
 
-.circles {
-  fill: transparent;
-  stroke-width: 1;
-  opacity: 0.9;
+#lines .main:hover .country {
+  opacity: .2;
 }
 
-.text {
-  fill: white;
-  font-family: sans-serif;
-  font-size: 10px;
+#lines .main .country:hover {
+  opacity: 1;
 }
-
-/* ========== LINES ========== */
 
 .line {
   fill: none;
-  stroke-width: 2;
+  stroke-width: 5;
+}
+
+.line:hover {
+  stroke-width: 7;
+  stroke: orangered;
 }
 
 .dots {
-  stroke-width: 5;
+  stroke-width: 4;
+}
+
+.circles {
+  fill: transparent;
+  stroke-width: 4;
+  opacity: 0.7;
+}
+
+.circles:hover {
+  opacity: 1;
+  stroke-width: 6;
+  stroke: orangered;
 }
 
 /* ========== MAP ========== */
