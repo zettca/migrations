@@ -8,7 +8,7 @@ import YearSlider from './components/YearSlider';
 import CountrySelect from './components/CountrySelect';
 import MigrationSwitch from './components/MigrationSwitch';
 import { chord, plot, lines, map } from './idioms';
-import { filterNaN, getMigrationDiff } from './helpers';
+import { byId, filterNaN, getMigrationDiff } from './helpers';
 
 import './index.css';
 import './idioms.css';
@@ -20,30 +20,21 @@ store.remove('isEmigration');
 
 store.set('selectedCountries', ['PRT', 'ESP', 'FRA', 'DEU']);
 
-// STATIC TEST DATA
+// html binds
 
-const plotData = [
-  { x: 21, y: 110 },
-  { x: 22.8, y: 93 },
-  { x: 18.7, y: 175 },
-  { x: 14.3, y: 245 },
-  { x: 24.4, y: 62 },
-  { x: 14.7, y: 230 },
-  { x: 32.4, y: 66 },
-  { x: 30.4, y: 52 },
-  { x: 33.9, y: 65 },
-  { x: 15.5, y: 150 },
-  { x: 15.2, y: 150 },
-  { x: 13.3, y: 245 },
-  { x: 19.2, y: 175 },
-  { x: 27.3, y: 66 },
-  { x: 26, y: 91 },
-  { x: 30.4, y: 113 },
-  { x: 15.8, y: 264 },
-  { x: 19.7, y: 175 },
-  { x: 15, y: 335 },
-  { x: 21.4, y: 109 }
-];
+const toggle = byId('graphToggle');
+const linesEl = byId('lines');
+const plotEl = byId('plot');
+toggle.onclick = (e) => {
+
+  if (linesEl.hidden) {
+    linesEl.hidden = false;
+    plotEl.hidden = true;
+  } else {
+    linesEl.hidden = true;
+    plotEl.hidden = false;
+  }
+};
 
 // DYNAMIC REAL DATA
 
@@ -52,7 +43,7 @@ const filesPromise = [
   json('./data/migrations.json'),
   tsv('./data/conversion.tsv'),
   tsv('./data/population.tsv'),
-  tsv('./data/whr2017.tsv'),
+  tsv('./data/whr2018.tsv'),
 ];
 
 Promise.all(filesPromise).then((dataResults) => handleData(dataResults));
@@ -60,10 +51,15 @@ Promise.all(filesPromise).then((dataResults) => handleData(dataResults));
 function handleData(data) {
   const [topology, migrationData, conversion, population, whrData] = data;
 
-  console.log(migrationData);
   const migrationDiff = getMigrationDiff(migrationData);
-
-  console.log(migrationDiff);
+  const whrDataObj = {};
+  whrData.forEach(entry => {
+    if (whrDataObj[entry.country] === undefined) {
+      whrDataObj[entry.country] = {};
+    }
+    whrDataObj[entry.country][entry.year] = filterNaN(entry);
+  });
+  console.log(whrDataObj);
 
   const codeToName = {};
   const countryPop = {};
@@ -73,16 +69,19 @@ function handleData(data) {
   conversion.forEach(c => codeToName[c.code3] = c.name);
   store.set('codeToName', codeToName);
 
-  // order is important, sadly
-  chord.draw('#chord', 600, 420, migrationData);
-  plot.draw('#plot', 600, 420, plotData);
-  lines.draw('#lines', 1000, 420, migrationDiff, countryPop);
-  map.draw('#map', 1000, 420, topology, migrationDiff, countryPop);
 
-  ReactDOM.render(makeSelect(migrationDiff, codeToName), document.getElementById('countrySelect'));
-  // ReactDOM.render(<EventSelect />, document.getElementById('eventList'));
-  ReactDOM.render(<MigrationSwitch />, document.getElementById('migrationSwitch'));
-  ReactDOM.render(<YearSlider />, document.getElementById('yearSlider'));
+  // order is important, sadly
+  chord.draw('#chord', 500, 420, migrationData);
+  plot.draw('#plot', 1200, 420, whrDataObj);
+  lines.draw('#lines', 1200, 420, migrationDiff, countryPop);
+  map.draw('#map', 1840, 420, topology, migrationDiff, countryPop);
+
+  plotEl.hidden = true;
+
+  ReactDOM.render(makeSelect(migrationDiff, codeToName), byId('countrySelect'));
+  // ReactDOM.render(<EventSelect />, byId('eventList'));
+  ReactDOM.render(<MigrationSwitch />, byId('migrationSwitch'));
+  ReactDOM.render(<YearSlider />, byId('yearSlider'));
 }
 
 function makeSelect(migrationData, codeToName) {

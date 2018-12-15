@@ -1,4 +1,4 @@
-country	year	Life Ladder	GDP	Social support	Healthy life expectancy	Freedom to make life choices	Generosity	Perceptions of corruption	Confidence in government
+country	year	Life Ladder	GDP per capita	Social support	Healthy life expectancy	Freedom to make life choices	Generosity	Perceptions of corruption	Confidence in government
 AFG	2008	3.724	7.169	0.451	49.210	0.718	0.182	0.882	0.612
 AFG	2009	4.402	7.334	0.552	49.624	0.679	0.204	0.850	0.612
 AFG	2010	4.758	7.387	0.539	50.009	0.600	0.138	0.707	0.299

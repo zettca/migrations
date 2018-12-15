@@ -22,19 +22,25 @@ export function filterNaN(obj) {
 
   for (const key in obj) {
     const num = Number(obj[key]);
-
     if (!isNaN(num) && num !== 0) {
-      res[key] = Number(obj[key]);
+      res[key] = num;
     }
   }
 
   return res;
 }
 
+export function byId(id) {
+  return document.getElementById(id);
+}
+
 export function createSVG(id, dims = { width: 400, height: 400 }, margins) {
+  const el = document.querySelector(id);
+  const { clientWidth, clientHeight } = el;
+
   const svg = d3.select(id).append('svg')
-    .attr('width', dims.width)
-    .attr('height', dims.height);
+    .attr('width', clientWidth)
+    .attr('height', clientHeight);
 
   if (margins !== undefined) {
     const group = svg.append('g')

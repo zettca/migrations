@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import store from 'store';
 import { createSVG } from '../helpers';
 
 export default {
@@ -24,19 +25,36 @@ export function drawPlot(id, width, height, data) {
 export function updatePlot() {
   console.log('updating plot...');
 
+  const selectedCountries = store.get('selectedCountries');
+  const country = selectedCountries[0];
+  const metrics = [
+    'GDP per capita',
+    'Confidence in government',
+    'Freedom to make life choices',
+    'Generosity',
+    'Healthy life expectancy',
+    'Life Ladder',
+    'Perceptions of corruption',
+    'Social support',
+  ];
+  const metric = metrics[0];
+
+  const countryData = Object.values(compareData[country] || []);
+  console.log(countryData);
+
   const
     width = svgDims.width - margin.left - margin.right,
     height = svgDims.height - margin.top - margin.bottom;
 
-  const flatData = compareData.reduce((acc, d) => acc.concat(d), []);
+  const flatData = countryData.reduce((acc, d) => acc.concat(d), []);
   const getDomain = (dataset, fn) => [d3.min(dataset, fn), d3.max(dataset, fn)];
 
   const xScale = d3.scaleLinear()
-    .domain(getDomain(flatData, d => d.x)).nice()
+    .domain(getDomain(flatData, d => d.year)).nice()
     .range([0, width]);
 
   const yScale = d3.scaleLinear()
-    .domain(getDomain(flatData, d => d.y)).nice()
+    .domain(getDomain(flatData, d => d[metric])).nice()
     .range([height, 0]);
 
   const xAxis = d3.axisBottom(xScale)
@@ -47,6 +65,8 @@ export function updatePlot() {
   // CLEAR OLD ELEMENTS
 
   plotSVG.selectAll('.circle').remove();
+  plotSVG.selectAll('.xAxis').remove();
+  plotSVG.selectAll('.yAxis').remove();
 
   // CREATE NEW ELEMENTS
 
@@ -62,11 +82,10 @@ export function updatePlot() {
   plotSVG.append('g')
     .attr('class', 'circles')
     .selectAll('circle')
-    .data(compareData)
+    .data(countryData)
     .enter().append('circle')
     .attr('class', 'circle')
-    .attr('cx', d => d.x)
-    .attr('cy', d => d.y)
+    .attr('cx', d => xScale(d.year))
+    .attr('cy', d => yScale(d[metric]))
     .attr('r', 4);
-
 }

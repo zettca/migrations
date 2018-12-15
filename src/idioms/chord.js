@@ -94,8 +94,6 @@ export function updateChord() {
     .attr('d', ribbon)
     .attr('fill', d => color(d.target.index))
     // .attr('stroke', d => d3.rgb(color(d.target.index)).darker())
-    // .on('mouseover', log)
-    // .on('mouseout', log)
     .append('title').text(d => makeTitle(d));
 
   function makeTitle(d) {
@@ -107,15 +105,8 @@ export function updateChord() {
     return `${c1} > ${c2}: ${v1}\n${c2} > ${c1}: ${v2}`;
   }
 
-  function log(d, i) {
-    console.log(d.source);
-  }
-
   function mouseover(d, i) {
-    console.log(d);
-
-    const t = d.value; // threshold
-
+    //const t = d.value; // threshold
     const s = groupArcs.selectAll('.arc');
     s.classed('fade', (p) => p.source.index !== i && p.target.index !== i);
     s.classed('show', (p) => p.source.index === i);

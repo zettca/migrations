@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import store from 'store';
 import { createSVG, colors, numColors, countryName } from '../helpers';
-import { lines, chord } from '../idioms';
+import { lines, chord, plot } from '../idioms';
 
 export default {
   draw: drawMap,
@@ -43,8 +43,8 @@ export function drawMap(id, width, height, topology, data, population) {
   populationData = population;
 
   const projection = d3.geoEquirectangular()
-    .scale(width / 4)
-    .translate([width / 2, height / 1.2]);
+    .scale(width / 5)
+    .translate([width / 2, height / 0.8]);
 
   const path = d3.geoPath().projection(projection);
   const zoom = d3.zoom()
@@ -108,4 +108,5 @@ export function updateMap() {
 
   lines.update();
   chord.update();
+  plot.update();
 }
