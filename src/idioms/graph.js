@@ -3,13 +3,13 @@ import store from 'store';
 import { createSVG, colors, numColors, countryName, parseNaN } from '../helpers';
 
 export default {
-  draw: drawLines,
-  update: updateLines,
+  draw: drawGraph,
+  update: updateGraph,
 };
 
 const margin = { top: 10, right: 20, bottom: 20, left: 40 };
 
-let linesSVG;
+let graphSVG;
 let svgDims;
 let compareData;
 let migrationData;
@@ -64,21 +64,21 @@ function loadCompareDataset() {
   return dataset;
 }
 
-export function drawLines(id, data, whrData, pop) {
+export function drawGraph(id, data, whrData, pop) {
   const el = document.querySelector(id);
   svgDims = { width: el.clientWidth, height: el.clientHeight };
 
 
-  linesSVG = createSVG(id, svgDims, margin);
+  graphSVG = createSVG(id, svgDims, margin);
   migrationData = data;
   populationData = pop;
   compareData = whrData;
 
-  updateLines();
+  updateGraph();
 }
 
-export function updateLines() {
-  console.log('updating lines...');
+export function updateGraph() {
+  console.log('updating graph...');
 
   const
     width = svgDims.width - margin.left - margin.right,
@@ -120,22 +120,22 @@ export function updateLines() {
 
   // CLEAR OLD ELEMENTS
 
-  linesSVG.selectAll('.country').remove();
-  linesSVG.selectAll('.xAxis').remove();
-  linesSVG.selectAll('.yAxis').remove();
+  graphSVG.selectAll('.country').remove();
+  graphSVG.selectAll('.xAxis').remove();
+  graphSVG.selectAll('.yAxis').remove();
 
   // CREATE NEW ELEMENTS
 
-  linesSVG.append('g')
+  graphSVG.append('g')
     .attr('class', 'xAxis')
     .attr('transform', `translate(0,${height})`)
     .call(xAxis);
 
-  linesSVG.append('g')
+  graphSVG.append('g')
     .attr('class', 'yAxis')
     .call(yAxis1);
 
-  // linesSVG.append('g')
+  // graphSVG.append('g')
   //   .attr('class', 'yAxis')
   //   .attr('transform', `translate(${width},${0})`)
   //   .call(yAxis2);
@@ -144,7 +144,7 @@ export function updateLines() {
     const color = colors.selection[i % numColors];
     const name = countryName(selectedCountries[i]);
 
-    const countryGroup = linesSVG.append('g')
+    const countryGroup = graphSVG.append('g')
       .attr('class', 'country')
       .attr('name', name);
 
