@@ -35,12 +35,9 @@ export function byId(id) {
 }
 
 export function createSVG(id, dims = { width: 400, height: 400 }, margins) {
-  const el = document.querySelector(id);
-  const { clientWidth, clientHeight } = el;
-
   const svg = d3.select(id).append('svg')
-    .attr('width', clientWidth)
-    .attr('height', clientHeight);
+    .attr('width', dims.width)
+    .attr('height', dims.height);
 
   if (margins !== undefined) {
     const group = svg.append('g')

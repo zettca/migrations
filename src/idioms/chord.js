@@ -14,7 +14,8 @@ let migrationData;
 let outerRadius, innerRadius;
 
 function getChordMatrix() {
-  selectedCountries = /*store.get('selectedCountries') ||*/ Object.keys(migrationData[2010]['WORLD']).slice(1, 40);
+  //selectedCountries = store.get('selectedCountries');
+  selectedCountries = Object.keys(migrationData[2010]['WORLD']).slice(1, 40);
 
   const isEmigration = store.get('isEmigration');
   const year = store.get('year') || 2010;
@@ -37,16 +38,17 @@ function getChordMatrix() {
   return matrix;
 }
 
-export function drawChord(id, width, height, data) {
+export function drawChord(id, data) {
+  const el = document.querySelector(id);
+  const [width, height] = [el.clientWidth, el.clientHeight];
+
   chordSVG = createSVG(id, { width, height });
-
-  migrationData = data;
-
   outerRadius = Math.min(width, height) * 0.5;
   innerRadius = outerRadius - 20;
 
-  chordSVG.attr('viewBox', [-width / 2, -height / 2, width, height]);
+  migrationData = data;
 
+  chordSVG.attr('viewBox', [-width / 2, -height / 2, width, height]);
   chordSVG.append('g').attr('class', 'nodes');
   chordSVG.append('g').attr('class', 'arcs');
 

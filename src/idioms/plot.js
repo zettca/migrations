@@ -13,9 +13,10 @@ let plotSVG;
 let svgDims;
 let compareData;
 
-export function drawPlot(id, width, height, data) {
-  svgDims = { width, height };
-  plotSVG = createSVG(id, { width, height }, margin);
+export function drawPlot(id, data) {
+  const el = document.querySelector(id);
+  svgDims = { width: el.clientWidth, height: el.clientHeight };
+  plotSVG = createSVG(id, svgDims, margin);
 
   compareData = data;
 

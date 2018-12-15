@@ -40,9 +40,11 @@ function loadDataset() {
   return dataset;
 }
 
-export function drawLines(id, width, height, data, pop) {
-  svgDims = { width, height };
-  linesSVG = createSVG(id, { width, height }, margin);
+export function drawLines(id, data, pop) {
+  const el = document.querySelector(id);
+  svgDims = { width: el.clientWidth, height: el.clientHeight };
+
+  linesSVG = createSVG(id, svgDims, margin);
   migrationData = data;
   populationData = pop;
 

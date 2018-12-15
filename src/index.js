@@ -71,10 +71,10 @@ function handleData(data) {
 
 
   // order is important, sadly
-  chord.draw('#chord', 500, 420, migrationData);
-  plot.draw('#plot', 1200, 420, whrDataObj);
-  lines.draw('#lines', 1200, 420, migrationDiff, countryPop);
-  map.draw('#map', 1840, 420, topology, migrationDiff, countryPop);
+  chord.draw('#chord', migrationData);
+  plot.draw('#plot', whrDataObj);
+  lines.draw('#lines', migrationDiff, countryPop);
+  map.draw('#map', topology, migrationDiff, countryPop);
 
   plotEl.hidden = true;
 

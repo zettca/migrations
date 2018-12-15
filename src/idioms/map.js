@@ -36,7 +36,10 @@ function clicked(d) {
   updateMap();
 }
 
-export function drawMap(id, width, height, topology, data, population) {
+export function drawMap(id, topology, data, population) {
+  const el = document.querySelector(id);
+  const [width, height] = [el.clientWidth, el.clientHeight];
+
   mapSVG = createSVG(id, { width, height });
 
   migrationData = data;
