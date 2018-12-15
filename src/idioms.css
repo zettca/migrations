@@ -8,13 +8,13 @@
   stroke: white;
 }
 
-/* ========== LINES/PLOT ========== */
+/* ========== GRAPH ========== */
 
-#lines .main:hover .country {
+#graph .main:hover .country {
   opacity: .2;
 }
 
-#lines .main .country:hover {
+#graph .main .country:hover {
   opacity: 1;
 }
 

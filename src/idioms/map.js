@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import store from 'store';
 import { createSVG, colors, numColors, countryName } from '../helpers';
-import { lines, chord, plot } from '../idioms';
+import { graph, chord } from '../idioms';
 
 export default {
   draw: drawMap,
@@ -109,7 +109,7 @@ export function updateMap() {
       .classed('selected', true);
   });
 
-  lines.update();
+  graph.update();
   chord.update();
   //plot.update();
 }

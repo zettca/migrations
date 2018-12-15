@@ -7,7 +7,7 @@ import YearSlider from './components/YearSlider';
 //import EventSelect from './components/EventSelect';
 import CountrySelect from './components/CountrySelect';
 import MigrationSwitch from './components/MigrationSwitch';
-import { chord, lines, map } from './idioms';
+import { chord, graph, map } from './idioms';
 import { byId, filterNaN, getMigrationDiff } from './helpers';
 
 import './index.css';
@@ -47,7 +47,7 @@ function handleData(data) {
   // order is important, sadly
   chord.draw('#chord', migrationData);
   //plot.draw('#plot', whrData);
-  lines.draw('#lines', migrationDiff, whrData, countryPop);
+  graph.draw('#graph', migrationDiff, whrData, countryPop);
   map.draw('#map', topology, migrationDiff, countryPop);
 
   ReactDOM.render(makeSelect(migrationDiff, codeToName), byId('countrySelect'));

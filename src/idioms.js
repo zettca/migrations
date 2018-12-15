@@ -1,9 +1,9 @@
 import chord from './idioms/chord';
-import lines from './idioms/lines';
+import graph from './idioms/graph';
 import map from './idioms/map';
 
 export {
   chord,
-  lines,
+  graph,
   map,
 };
