@@ -274,7 +274,8 @@ countryDict = {
 	"Hong Kong S.A.R. of China": "HKG",
 	"Iran": "IRN",
 	"Laos": "LAO",
-
+	"Venezuela": "VEN",
+	"Syria": "SYR",
 }
 
 def replace_all1(text, dic):
