@@ -11,7 +11,6 @@ import { chord, graph, map } from './idioms';
 import { byId, filterNaN, getMigrationDiff } from './helpers';
 
 import './index.css';
-import './idioms.css';
 
 // STARTUP
 
