@@ -68,7 +68,6 @@ export function drawGraph(id, data, whrData, pop) {
   const el = document.querySelector(id);
   svgDims = { width: el.clientWidth, height: el.clientHeight };
 
-
   graphSVG = createSVG(id, svgDims, margin);
   migrationData = data;
   populationData = pop;
