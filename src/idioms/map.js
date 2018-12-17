@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import store from 'store';
-import { createSVG, colors, numColors, countryName } from '../helpers';
+import { createSVG, colors, numColors, countryName, getMigration } from '../helpers';
 import { graph, chord } from '../idioms';
 
 export default {
@@ -15,7 +15,7 @@ function mouseIn() { }
 
 function mouseOut() { }
 
-function contextMenu(d) {
+function clickRight(d) {
   d3.event.preventDefault();
 
   const selectedCountries = new Set(store.get('selectedCountries'));
@@ -25,7 +25,7 @@ function contextMenu(d) {
   updateMap();
 }
 
-function clicked(d) {
+function clickLeft(d) {
   const forbidden = ['UNK', 'TWN', 'ATA'];
   if (forbidden.includes(d.id)) return;
 
@@ -35,6 +35,8 @@ function clicked(d) {
 
   updateMap();
 }
+
+
 
 export function drawMap(id, topology, data, population) {
   const el = document.querySelector(id);
@@ -64,10 +66,10 @@ export function drawMap(id, topology, data, population) {
     .attr('id', (d) => d.id)
     .attr('name', (d) => d.properties.name)
     .attr('d', path)
-    .on('click', clicked)
+    .on('click', clickLeft)
     .on('mouseover', mouseIn)
     .on('mouseout', mouseOut)
-    .on('contextmenu', contextMenu)
+    .on('contextmenu', clickRight)
     .append('title').text(d => `${d.id}: ${d.properties.name}`);
 
   function zoomed() {
@@ -82,25 +84,27 @@ export function updateMap() {
   console.log('updating map...');
 
   const selectedCountries = store.get('selectedCountries') || [];
-  const isEmigration = store.get('isEmigration');
   const year = store.get('year') || 2010;
   const dataYear = migrationData[year];
 
   function getMigrants(d) {
     if (dataYear[d.id] === undefined) return 0; // no data
-    const migrants = isEmigration ? dataYear['WORLD'][d.id] : dataYear[d.id]['Total'];
-    const pop = populationData[d.id][year] * 1000;
-    return migrants || 0;
+    const migrants = getMigration(dataYear, d.id);
+    const pop = populationData[d.id][year];
+
+    return migrants / pop || 0;
   }
 
   const color = d3.scaleThreshold()
-    .domain([-10, -5, -2, -1, 0, 1, 2, 5, 10].map(n => n * 100 * 1000))
+    .domain([-20, -10, -5, -2.5, 0, 2.5, 5, 10, 20])
     .range(colors.map);
 
   mapSVG.selectAll('path')
     // .transition().duration(600)
     .style('fill', (d) => color(getMigrants(d)))
-    .select('title').text(d => `${countryName(d.id)}: ${d3.format('~s')(getMigrants(d))}`);
+    .select('title').text(d =>
+      `${countryName(d.id)}: ${d3.format('.1f')(getMigrants(d))}/1000 population`
+    );
 
   d3.selectAll('.selected').classed('selected', false);
   selectedCountries.forEach((countryID, i) => {
@@ -111,5 +115,4 @@ export function updateMap() {
 
   graph.update();
   chord.update();
-  //plot.update();
 }

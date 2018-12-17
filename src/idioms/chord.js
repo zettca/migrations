@@ -8,14 +8,13 @@ export default {
 };
 
 let chordSVG;
-let selectedCountries;
-let migrationData;
+let countries, migrationData;
 
 let outerRadius, innerRadius;
 
 function getChordMatrix() {
-  //selectedCountries = store.get('selectedCountries');
-  selectedCountries = Object.keys(migrationData[2010]['WORLD']).slice(1, 40);
+  countries = store.get('selectedCountries');
+  //countries = Object.keys(migrationData[2010]['WORLD']).slice(200, 230);
 
   const isEmigration = store.get('isEmigration');
   const year = store.get('year') || 2010;
@@ -31,8 +30,8 @@ function getChordMatrix() {
     return val || 0;
   }
 
-  selectedCountries.forEach(c => {
-    matrix.push(selectedCountries.map(c2 => getValue(c, c2)));
+  countries.forEach(c => {
+    matrix.push(countries.map(c2 => getValue(c, c2)));
   });
 
   return matrix;
@@ -87,7 +86,7 @@ export function updateChord() {
     .attr('d', arc)
     .on('mouseover', mouseover)
     .on('mouseout', mouseout)
-    .append('title').text(d => `${countryName(selectedCountries[d.index])}: ${d3.format('~s')(d.value)}`);
+    .append('title').text(d => `${countryName(countries[d.index])}: ${d3.format('~s')(d.value)}`);
 
   groupArcs.selectAll('path')
     .data(chords)
@@ -102,7 +101,7 @@ export function updateChord() {
     const isEmigration = store.get('isEmigration');
     const countryOrder = isEmigration ? [d.source, d.target] : [d.target, d.source];
     const valueOrder = [d.source, d.target];
-    const [c1, c2] = countryOrder.map(el => countryName(selectedCountries[el.index]));
+    const [c1, c2] = countryOrder.map(el => countryName(countries[el.index]));
     const [v1, v2] = valueOrder.map(el => d3.format('~s')(el.value));
     return `${c1} > ${c2}: ${v1}\n${c2} > ${c1}: ${v2}`;
   }

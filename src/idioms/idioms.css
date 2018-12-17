@@ -1,93 +1,86 @@
-/* ========== COMMON ========== */
-
-.tick text {
-  fill: white;
-}
-
-.tick line {
-  stroke: white;
-}
-
 /* ========== GRAPH ========== */
 
-#graph .main:hover .country {
-  opacity: .2;
+#graph .countries:hover .country {
+  opacity: .04 !important;
 }
 
-#graph .main .country:hover {
-  opacity: 1;
+#graph .countries .country:hover {
+  opacity: 1 !important;
 }
 
-.line {
-  fill: none;
-  stroke-width: 5;
-}
-
-.line:hover {
-  stroke-width: 7;
-  stroke: orangered;
-}
-
-.dots {
-  stroke-width: 4;
-}
-
-.circles {
-  fill: transparent;
-  stroke-width: 4;
-  opacity: 0.7;
-}
-
-.circles:hover {
-  opacity: 1;
+#graph .dots, #graph .line {
   stroke-width: 6;
-  stroke: orangered;
+}
+
+#graph .line {
+  fill: none;
+  opacity: 0.8;
+}
+
+#graph .line:hover {
+  opacity: 1;
+}
+
+#graph .dots {
+  stroke-width: 4;
+}
+
+#graph .selected {
+  visibility: visible !important;
+}
+
+#graph .metrics:hover .metric {
+  opacity: 0.1;
+}
+
+#graph .metrics .metric:hover {
+  opacity: 1;
 }
 
 /* ========== MAP ========== */
 
-.countries {
+#map .countries {
   fill: black;
 }
 
-.countries path {
+#map .countries path {
   stroke: transparent;
   opacity: 0.9;
   stroke-width: 0.4;
   stroke-opacity: 1;
 }
 
-.countries .selected {
+#map .countries .selected {
   opacity: 1;
 }
 
-.countries path:hover {
+#map .countries path:hover {
   stroke-width: 1.2;
   opacity: 1;
 }
 
-.names {
+#map .names {
   fill: none;
   stroke: white;
   stroke-linejoin: round;
 }
 
-.names:hover {
+#map .names:hover {
   fill: black;
 }
 
 /* ========== CHORD ========== */
 
-.arcs {
+#chord .arcs {
   fill-opacity: 0.8;
 }
 
-path.fade {
+#chord path.fade {
   fill-opacity: .1;
   stroke-opacity: .1;
 }
 
-path.show {
+#chord path.show {
   fill-opacity: 1;
   stroke-opacity: 1;
 }

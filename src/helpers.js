@@ -9,8 +9,13 @@ export const numColors = 9;
 
 export const colors = {
   map: d3.schemeBlues[numColors],
-  selection: d3.schemeReds[numColors]
+  selection: d3.schemeRdYlGn[numColors],
 };
+
+export function getMigration(dataYear, country) {
+  const isEmigration = store.get('isEmigration');
+  return isEmigration ? dataYear['WORLD'][country] : dataYear[country]['Total'];
+}
 
 export function countryName(code) {
   const codeToName = store.get('codeToName');

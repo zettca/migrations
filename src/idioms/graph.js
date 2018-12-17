@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import store from 'store';
-import { createSVG, colors, numColors, countryName, parseNaN } from '../helpers';
+import { createSVG, colors, numColors, countryName, parseNaN, getMigration } from '../helpers';
 
 export default {
   draw: drawGraph,
@@ -11,29 +11,21 @@ const margin = { top: 10, right: 20, bottom: 20, left: 40 };
 
 let graphSVG;
 let svgDims;
-let compareData;
-let migrationData;
-let populationData;
 let selectedCountries;
+let compareData, migrationData, populationData;
 
 const metrics = [
   'GDP per capita',
-  'Confidence in government',
-  'Freedom to make life choices',
-  'Generosity',
-  'Healthy life expectancy',
-  'Life Ladder',
-  'Perceptions of corruption',
   'Social support',
+  'Healthy life expectancy',
+  'Freedom to make life choices',
+  'Perceptions of corruption',
+  // 'Confidence in government',
 ];
-const metric = metrics[0];
 
 function loadDataset() {
   const dataset = {};
-  selectedCountries = store.get('selectedCountries');
   if (!selectedCountries || selectedCountries.length === 0) return [];
-
-  const isEmigration = store.get('isEmigration');
 
   for (let c of selectedCountries) {
     const country = [];
@@ -41,7 +33,7 @@ function loadDataset() {
       const dataYear = migrationData[year];
       if (dataYear[c] === undefined) continue; // no data
 
-      const migrants = Number(isEmigration ? dataYear['WORLD'][c] : dataYear[c]['Total']);
+      const migrants = Number(getMigration(dataYear, c));
       const pop = populationData[c][year] * 1000;
       const data = migrants /*/ pop*/;
 
@@ -57,9 +49,9 @@ function loadCompareDataset() {
   const dataset = {};
   compareData.forEach(entry => {
     if (dataset[entry.country] === undefined) {
-      dataset[entry.country] = {};
+      dataset[entry.country] = [];
     }
-    dataset[entry.country][entry.year] = parseNaN(entry);
+    dataset[entry.country].push(parseNaN(entry));
   });
   return dataset;
 }
@@ -83,38 +75,48 @@ export function updateGraph() {
     width = svgDims.width - margin.left - margin.right,
     height = svgDims.height - margin.top - margin.bottom;
 
-  const data = loadDataset();
-  const dataset = Object.values(data);
+  selectedCountries = store.get('selectedCountries');
+
+  const dataset = loadDataset();
   const compareDataset = loadCompareDataset();
 
-  const flatData = dataset.reduce((acc, d) => acc.concat(d), []);
-  const filterData = compareData.filter(el => selectedCountries.includes(el.country));
-  const xDomain = (data, fn) => [d3.min(data, fn), d3.max(data, fn)];
-  const y1Domain = (data, fn) => [Math.min(0, d3.min(data, fn)), d3.max(data, fn)];
-  const y2Domain = (data, fn) => [d3.min(data, fn), d3.max(data, fn)];
+  const flatData = Object.values(dataset).reduce((acc, d) => acc.concat(d), []);
 
-  const xScale = d3.scaleLinear()
-    .domain(xDomain(flatData, d => d.year)).nice()
+  console.log(compareData);
+  console.log(compareDataset);
+
+  const axisDomain = (data, fn) => [d3.min(data, fn), d3.max(data, fn)];
+
+  const yearScale = d3.scaleLinear()
+    .domain(axisDomain(flatData, d => d.year)).nice()
     .range([0, width]);
 
-  const yScale1 = d3.scaleLinear()
-    .domain(y1Domain(flatData, d => d.value)).nice()
+  const migrantsScale = d3.scaleLinear()
+    .domain(axisDomain(flatData, d => d.value)).nice()
     .range([height, 0]);
 
-  const yScale2 = d3.scaleLinear()
-    .domain(y2Domain(filterData, d => +d[metric])).nice()
-    .range([height, 0]);
+  // scale for each metric
+  const metricsScale = metrics.map(metric =>
+    d3.scaleLinear()
+      .domain(axisDomain(compareData, d => +d[metric])).nice()
+      .range([height, 0]));
 
-  const xAxis = d3.axisBottom(xScale)
-    .tickFormat(d3.format('d'));
-  const yAxis1 = d3.axisLeft(yScale1)
-    .tickFormat(d3.format('~s'));
-  const yAxis2 = d3.axisRight(yScale2)
-    .tickFormat(d3.format('~s'));
+  // scale for each country x metric
+  const metricsScale2 = selectedCountries.reduce((obj, country) => {
+    obj[country] = metrics.map(metric =>
+      d3.scaleLinear()
+        .domain(axisDomain(compareDataset[country], d => +d[metric])).nice()
+        .range([height, 0]));
+    return obj;
+  }, {});
+
+  const xAxis = d3.axisBottom(yearScale).tickFormat(d3.format('d'));
+  const yAxis1 = d3.axisLeft(migrantsScale).tickFormat(d3.format('~s'));
+  //const yAxis2 = d3.axisRight(yScale2).tickFormat(d3.format('~s'));
 
   const line = d3.line()
-    .x(d => xScale(d.year))
-    .y(d => yScale1(d.value))
+    .x(d => yearScale(d.year))
+    .y(d => migrantsScale(d.value))
     .curve(d3.curveMonotoneX);
 
   // CLEAR OLD ELEMENTS
@@ -139,42 +141,92 @@ export function updateGraph() {
   //   .attr('transform', `translate(${width},${0})`)
   //   .call(yAxis2);
 
-  for (let i = 0; i < dataset.length; i++) {
-    const color = colors.selection[i % numColors];
-    const name = countryName(selectedCountries[i]);
+  const ms = store.get('isEmigration') ? 'emigration' : 'immigration';
 
-    const countryGroup = graphSVG.append('g')
+
+  function showMetrics(g) {
+    graphSVG.selectAll('.selected').classed('selected', false);
+    g.selectAll('.metrics').classed('selected', true);
+  }
+
+  function hideMetrics(g) {
+    d3.event.preventDefault();
+    g.selectAll('.selected').classed('selected', false);
+    g.selectAll('.metrics').attr('visibility', 'hidden');
+  }
+
+  const countriesGroup = graphSVG.append('g')
+    .attr('class', 'countries');
+
+  let i = 0;
+  for (const country in dataset) {
+    const countryData = dataset[country];
+    const color = colors.selection[i++ % numColors];
+    const coName = countryName(country);
+
+    const countryGroup = countriesGroup.append('g')
+      .attr('id', country)
       .attr('class', 'country')
-      .attr('name', name);
+      .attr('name', coName);
 
     countryGroup.append('path')  // line
-      .datum(dataset[i])
-      .attr('stroke', color)
+      .datum(countryData)
       .attr('class', 'line')
-      .attr('d', line);
+      .attr('stroke', color)
+      .attr('d', line)
+      .on('click', () => showMetrics(countryGroup))
+      .on('contextmenu', () => hideMetrics(countryGroup))
+      .on('mouseenter', () => countryGroup.selectAll('.metrics').attr('visibility', 'visible'))
+      .on('mouseout', () => countryGroup.selectAll('.metrics').attr('visibility', 'hidden'))
+      .append('title').text(() => `${coName} ${ms} line`);
 
     countryGroup.append('g')    // line dots
       .attr('class', 'dots')
       .attr('fill', color)
       .attr('stroke', color)
-      .selectAll().data(dataset[i])
+      .selectAll().data(countryData)
       .enter().append('circle')
-      .attr('cx', (d) => xScale(d.year))
-      .attr('cy', (d) => yScale1(d.value))
+      .attr('cx', (d) => yearScale(d.year))
+      .attr('cy', (d) => migrantsScale(d.value))
       .attr('r', 3)
-      .append('title').text(d => `${name} (${d.year}): ${d3.format('~s')(d.value)}`);
+      .append('title').text(d => `${coName} (${d.year}): ${d3.format('~s')(d.value)}`);
 
-    countryGroup.append('g')    // correlation circles
-      .attr('class', 'circles')
-      .selectAll('circle')
-      .data(Object.values(compareDataset[selectedCountries[i]]))
-      .enter().append('circle')
-      .attr('class', 'circle')
-      .attr('fill', color)
-      .attr('stroke', color)
-      .attr('cx', d => xScale(d.year))
-      .attr('cy', d => yScale2(d[metric]))
-      .attr('r', 5)
-      .append('title').text(d => `${name} (${d.year}): ${d[metric]} ${metric}`);
+    // correlation data
+
+    const metricsGroup = countryGroup.append('g')
+      .attr('class', 'metrics')
+      .attr('visibility', 'hidden');
+
+    metrics.forEach((met, i) => {
+      const color = d3.interpolateRainbow(i / metrics.length);
+
+      const line = d3.line()
+        .x(d => yearScale(d.year))
+        .y(d => metricsScale[i](d[met]))
+        .curve(d3.curveMonotoneX);
+
+      const metricGroup = metricsGroup.append('g')
+        .attr('class', 'metric');
+
+      metricGroup.append('path')  // line
+        .datum(compareDataset[country])
+        .attr('stroke', color)
+        .attr('fill', 'none')
+        .attr('opacity', 0.8)
+        .attr('d', line)
+        .append('title').text(() => met);
+
+      metricGroup.append('g')    // correlation circles
+        .attr('fill', color)
+        .attr('stroke', color)
+        .selectAll('circle')
+        .data(compareDataset[country])
+        .enter().append('circle')
+        .attr('class', 'circle')
+        .attr('cx', d => yearScale(d.year))
+        .attr('cy', d => metricsScale[i](d[met]))
+        .attr('r', 3)
+        .append('title').text(d => `${coName} (${d.year}): ${d[met]} ${met}`);
+    });
   }
 }
