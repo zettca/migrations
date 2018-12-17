@@ -14,7 +14,7 @@ const margin = { top: 10, right: 20, bottom: 20, left: 40 };
 let graphSVG;
 let svgDims;
 let selectedCountries;
-let compareData, migrationData, populationData;
+let compareData, migrationData;
 
 const metrics = [
   'GDP per capita',
@@ -39,7 +39,7 @@ function loadDataset() {
       if (dataYear[c] === undefined) continue; // no data
 
       const migrants = Number(getMigration(dataYear, c));
-      const pop = populationData[c][year] * 1000;
+      //const pop = populationData[c][year] * 1000;
       const data = migrants /*/ pop*/;
 
       country.push({ year: Number(year), value: Number(data) });
@@ -61,13 +61,12 @@ function loadCompareDataset() {
   return dataset;
 }
 
-export function drawGraph(id, data, whrData, pop) {
+export function drawGraph(id, data, whrData) {
   const el = document.querySelector(id);
   svgDims = { width: el.clientWidth, height: el.clientHeight };
 
   graphSVG = createSVG(id, svgDims, margin);
   migrationData = data;
-  populationData = pop;
   compareData = whrData;
 
   updateGraph();

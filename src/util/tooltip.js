@@ -1,13 +1,6 @@
 import * as d3 from 'd3';
 import './tooltip.css';
 
-export default {
-  mouseover,
-  mouseout,
-  mousemove,
-  tooltip,
-};
-
 const tooltip = d3.select('body').append('div')
   .attr('id', 'tooltip')
   .style('visibility', 'hidden');
@@ -29,3 +22,10 @@ function mousemove() {
     .style('left', d3.event.pageX + 10 + 'px')
     .style('top', d3.event.pageY + 'px');
 }
+
+export default {
+  mouseover,
+  mouseout,
+  mousemove,
+  tooltip,
+};

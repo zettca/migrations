@@ -3,11 +3,6 @@ import EventEmitter from 'events';
 
 class SelectionEmitter extends EventEmitter { }
 
-export default {
-  emitter,
-  state,
-};
-
 export const emitter = new SelectionEmitter();
 
 export const state = {
@@ -59,3 +54,8 @@ function remCountry(countryId) {
   countries.delete(countryId);
   setCountries(countries);
 }
+
+export default {
+  emitter,
+  state,
+};

@@ -1,6 +1,7 @@
 import * as d3 from 'd3';
-import store from 'store';
-import { selection, stateEmitter, createSVG, colors, countryName, tooltip } from '../util';
+import {
+  selection, stateEmitter, createSVG, colors, countryName, tooltip
+} from '../util';
 
 export default {
   draw: drawChord,
