@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import store from 'store';
-import { createSVG, colors, countryName } from '../helpers';
+import { stateEmitter, createSVG, colors, countryName } from '../helpers';
 
 export default {
   draw: drawChord,
@@ -11,6 +11,10 @@ let chordSVG;
 let countries, migrationData;
 
 let outerRadius, innerRadius;
+
+stateEmitter.on('yearChanged', () => updateChord());
+stateEmitter.on('countriesChanged', () => updateChord());
+stateEmitter.on('migrationChanged', () => updateChord());
 
 function getChordMatrix() {
   countries = store.get('selectedCountries');
@@ -69,12 +73,14 @@ export function updateChord() {
   const ribbon = d3.ribbon().radius(innerRadius);
 
   const color = d3.scaleOrdinal()
-    .domain(d3.range(9))
+    .domain(d3.range(colors.selection.length))
     .range(colors.selection);
 
   const arc = d3.arc()
     .innerRadius(innerRadius)
     .outerRadius(outerRadius);
+
+  if (chords.length === 0) return;
 
   groupNodes.selectAll('g')
     .data(chords.groups)

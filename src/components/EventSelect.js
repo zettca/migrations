@@ -1,9 +1,8 @@
-import store from 'store';
 import React from 'react';
 import Select from 'react-select';
 import makeAnimated from 'react-select/lib/animated';
 
-import { map } from '../idioms';
+import { selection, years } from '../helpers';
 
 export default class EventSelect extends React.PureComponent {
   render() {
@@ -12,21 +11,24 @@ export default class EventSelect extends React.PureComponent {
     const options = [];
 
     events.forEach((event, i) => {
-      options.push({ value: i, label: event.name });
+      const { year, name } = event;
+      options.push({ value: i, label: `${year} ${name}` });
     });
 
     return (
       <Select
-        onChange={(selection) => {
-          const { name, year, countries } = events[selection.value];
-
+        onChange={(selected, action) => {
+          const { name, year, countries } = events[selected.value];
           const countriesList = countries.split(',')
 
-          console.log(year, name, countriesList);
+          let i = 0;
+          while (years[i] < year) i++;
 
-          store.set('selectedCountries', countriesList);
-          map.update();
+          const actualYear = years[i - 1] || years[0]
 
+          console.log('EVENT:', actualYear, name, countriesList);
+          selection.setCountries(countriesList);
+          selection.setYear(actualYear);
         }}
         placeholder={'Select an event...'}
         components={makeAnimated}

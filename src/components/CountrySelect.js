@@ -2,16 +2,48 @@ import store from 'store';
 import React from 'react';
 import Select from 'react-select';
 import makeAnimated from 'react-select/lib/animated';
-import { map } from '../idioms';
 
-export default class CountrySelect extends React.PureComponent {
+import { selection, stateEmitter } from '../helpers';
+
+const codeToName = store.get('codeToName');
+
+function handleChange(selected, action) {
+  console.log(selected, action);
+
+  switch (action.action) {
+    case 'clear':
+      return selection.clearCountries();
+    case 'select-option':
+      return selection.addCountry(action.option.value)
+    case 'remove-value':
+      return selection.remCountry(action.removedValue.value)
+    default:
+      break;
+  }
+}
+
+export default class CountrySelect extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+
+  componentDidMount() {
+    stateEmitter.on('countriesChanged', () => {
+      const countries = selection.getCountries();
+      const value = countries.map(c => ({ value: c, label: codeToName[c] }));
+      this.setState({ value });
+    });
+  }
+
   render() {
-    const { data } = this.props;
-    const codeToName = store.get('codeToName');
+    console.log(this.state);
+
+    const countryData = this.props.data;
 
     const countries = [];
-    const year = Object.keys(data).slice(-1);
-    Object.keys(data[year]).forEach(key => {
+    const year = Object.keys(countryData).slice(-1);
+    Object.keys(countryData[year]).forEach(key => {
       if (key.length !== 3) return;
       countries.push({ value: key, label: codeToName[key] });
     });
@@ -26,6 +58,7 @@ export default class CountrySelect extends React.PureComponent {
         onSelectResetsInput={false}
         onCloseResetsInput={false}
         options={options}
+        value={this.state.value}
         theme={(theme) => ({
           ...theme,
           borderRadius: 0,
@@ -40,37 +73,7 @@ export default class CountrySelect extends React.PureComponent {
             neutral80: 'white'
           }
         })}
-        onChange={(selection, action) => {
-          console.log(action);
-
-          const countries = new Set(store.get('selectedCountries'));
-
-          console.log(countries);
-
-          switch (action.action) {
-            case 'clear':
-              countries.clear();
-              break;
-            case 'select-option':
-              countries.add(action.option.value);
-              break;
-            case 'remove-value':
-              console.log(action.removedValue.value);
-              countries.delete(action.removedValue.value);
-              break;
-            case 'set-value':
-              console.log('wut, is possibru?');
-              break;
-            default:
-              break;
-          }
-
-          console.log(countries);
-
-
-          store.set('selectedCountries', Array.from(countries));
-          map.update();
-        }}
+        onChange={handleChange}
         {...this.props}
       />);
   }

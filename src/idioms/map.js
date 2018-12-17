@@ -1,7 +1,8 @@
 import * as d3 from 'd3';
 import store from 'store';
-import { createSVG, colors, numColors, countryName, getMigration } from '../helpers';
-import { graph, chord } from '../idioms';
+import {
+  selection, stateEmitter, createSVG, colors, countryName, getMigration
+} from '../helpers';
 
 export default {
   draw: drawMap,
@@ -11,6 +12,10 @@ export default {
 let mapSVG;
 let migrationData, populationData;
 
+stateEmitter.on('yearChanged', () => updateMap());
+stateEmitter.on('countriesChanged', () => updateMap());
+stateEmitter.on('migrationChanged', () => updateMap());
+
 function mouseIn() { }
 
 function mouseOut() { }
@@ -18,22 +23,14 @@ function mouseOut() { }
 function clickRight(d) {
   d3.event.preventDefault();
 
-  const selectedCountries = new Set(store.get('selectedCountries'));
-  selectedCountries.delete(d.id);
-  store.set('selectedCountries', Array.from(selectedCountries));
-
-  updateMap();
+  selection.remCountry(d.id);
 }
 
 function clickLeft(d) {
   const forbidden = ['UNK', 'TWN', 'ATA'];
   if (forbidden.includes(d.id)) return;
 
-  const selectedCountries = new Set(store.get('selectedCountries'));
-  selectedCountries.add(d.id);
-  store.set('selectedCountries', Array.from(selectedCountries));
-
-  updateMap();
+  selection.addCountry(d.id);
 }
 
 
@@ -109,10 +106,7 @@ export function updateMap() {
   d3.selectAll('.selected').classed('selected', false);
   selectedCountries.forEach((countryID, i) => {
     d3.select('path#' + countryID)
-      .style('fill', colors.selection[i % numColors])
+      .style('fill', colors.selection[i % colors.selection.length])
       .classed('selected', true);
   });
-
-  graph.update();
-  chord.update();
 }

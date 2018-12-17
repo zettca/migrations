@@ -2,7 +2,7 @@ import React from 'react';
 import store from 'store';
 import Switch from 'react-switch';
 
-import { map } from '../idioms';
+import { selection } from '../helpers';
 
 export default class MigrationSwitch extends React.Component {
   constructor(props) {
@@ -17,10 +17,8 @@ export default class MigrationSwitch extends React.Component {
   }
 
   handleChange(checked) {
-    store.set('isEmigration', checked);
     this.setState({ checked });
-
-    map.update(); // map updates others
+    selection.setMigration(checked);
   }
 
   render() {

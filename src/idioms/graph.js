@@ -1,6 +1,8 @@
 import * as d3 from 'd3';
 import store from 'store';
-import { createSVG, colors, numColors, countryName, parseNaN, getMigration } from '../helpers';
+import {
+  stateEmitter, createSVG, colors, countryName, parseNaN, getMigration
+} from '../helpers';
 
 export default {
   draw: drawGraph,
@@ -22,6 +24,9 @@ const metrics = [
   'Perceptions of corruption',
   // 'Confidence in government',
 ];
+
+stateEmitter.on('countriesChanged', () => updateGraph());
+stateEmitter.on('migrationChanged', () => updateGraph());
 
 function loadDataset() {
   const dataset = {};
@@ -152,7 +157,7 @@ export function updateGraph() {
   let i = 0;
   for (const country in dataset) {
     const countryData = dataset[country];
-    const color = colors.selection[i++ % numColors];
+    const color = colors.selection[i++ % colors.selection.length];
     const coName = countryName(country);
 
     if (!countryData) break;

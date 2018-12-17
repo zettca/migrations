@@ -1,32 +1,36 @@
 import React from 'react';
-import store from 'store';
 import Slider from 'rc-slider';
-import { map } from '../idioms';
+import { stateEmitter, selection, years } from '../helpers';
 
 import 'rc-slider/assets/index.css';
 import './YearSlider.css';
 
-const marks = {
-  1995: '1995',
-  2000: '2000',
-  2005: '2005',
-  2010: '2010',
-  2015: '2015',
-  2017: '2017',
-};
+const marks = {};
+years.forEach(year => marks[year] = year + '');
 
 function yearChange(params) {
-  store.set('year', params);
-  map.update();
+  selection.setYear(params);
 }
 
-export default class YearSlider extends React.PureComponent {
+export default class YearSlider extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+
+  componentDidMount() {
+    stateEmitter.on('yearChanged', () => {
+      const year = selection.getYear();
+      this.setState({ year });
+    });
+  }
   render() {
     const style = { padding: '0.4em 2em 0' };
 
     return (
       <div style={style}>
         <Slider
+          value={this.state.year}
           min={1995}
           max={2017}
           included={false}

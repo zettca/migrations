@@ -1,16 +1,67 @@
 import * as d3 from 'd3';
 import store from 'store';
+import EventEmitter from 'events';
+
+class SelectionEmitter extends EventEmitter { }
+
+export const stateEmitter = new SelectionEmitter();
+
+export const years = [1995, 2000, 2005, 2010, 2015, 2017];
 
 export function tryNumber(value) {
   return Number(value) || value;
 }
 
-export const numColors = 9;
-
 export const colors = {
-  map: d3.schemeBlues[numColors],
+  map: d3.schemeBlues[9],
   selection: d3.schemePaired.slice(2),
 };
+
+export const selection = {
+  getCountries, setCountries, clearCountries,
+  addCountry, remCountry,
+  getYear: () => store.get('year'),
+  setYear,
+  getMigration: () => store.get('isEmigration'),
+  setMigration,
+};
+
+function setYear(value) {
+  store.set('year', value);
+  stateEmitter.emit('yearChanged');
+}
+
+function setMigration(value) {
+  store.set('isEmigration', value);
+  stateEmitter.emit('migrationChanged');
+}
+
+function getCountries() {
+  return store.get('selectedCountries');
+}
+
+function setCountries(countries) {
+  store.set('selectedCountries', Array.from(countries));
+  stateEmitter.emit('countriesChanged');
+}
+
+function clearCountries() {
+  setCountries([]);
+}
+
+function addCountry(countryId) {
+  const countries = new Set(getCountries());
+  countries.add(countryId);
+  setCountries(countries);
+}
+
+function remCountry(countryId) {
+  const countries = new Set(getCountries());
+  countries.delete(countryId);
+  setCountries(countries);
+}
+
+
 
 export function getMigration(dataYear, country) {
   const isEmigration = store.get('isEmigration');
