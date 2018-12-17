@@ -1,3 +1,19 @@
-name	startYear	endYear	countries
-Vietnam War	2000	2004	VIE,PRT,SPA,USA,BANANA
-Afgan War	1990	1992	AGF,PRT,USA,FRA
+name	year	countries
+Rwandan Genocide	1994	RWA
+Russian War in Chechnya	1995	RUS
+Nepalese War	1996	NPL
+Asian Financial Crisis	1997	KOR,THA,MYS,PHL,IDN,SGP
+Second Congo War	1998	COD,AGO,RWA,NAM,ZWE
+Second Liberian Civil War	1999	LBR,GIN,SLE,CIV
+Argentina Economic Crisis	2001	ARG
+Ivorian Civil War	2002	CIV
+Lebanon War	2006	ISR
+Financial Crisis	2007	World
+Gaza War	2008	ISR
+Sri Lankan Civil War	2009	LKA
+Syrian Civil War	2011	SYR
+Second Ivorian Civil War	2011	CIV
+Mali Civil War	2012	MLI
+Central African Republic Conflict	2012	CAF
+Crimeia Crisis	2014	UKR
+Brexit	2017	GBR
