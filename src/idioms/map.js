@@ -93,8 +93,8 @@ export function updateMap() {
     // .transition().duration(600)
     .style('fill', (d) => color(getMigrants(d)))
     .on('mouseover', (d) => tooltip.mouseover(
-      `<strong>${countryName(d.id)}</strong><br/>
-      ${d3.format('.1f')(getMigrants(d))} migrants in ${year}<br/>
+      `<strong>${countryName(d.id)}</strong> (${year})<br/>
+      <big>${d3.format('.1f')(getMigrants(d))}</big> migrants<br/>
       <small>/1000 population</small>`
     ));
 

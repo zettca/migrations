@@ -121,9 +121,8 @@ export function updateChord() {
     s.classed('show', (p) => p.source.index === i);
 
     tooltip.mouseover(
-      `<strong>${countryName(countries[d.index])}</strong><br/>
-      ${d3.format('~s')(d.value)} ${ms.slice(0, -4)}nts<br/>
-      <small>in ${selection.getYear()}</small>`
+      `<strong>${countryName(countries[d.index])}</strong> (${selection.getYear()})<br/>
+      <big>${d3.format('~s')(d.value)}</big> ${ms.slice(0, -4)}nts<br/>`
     );
   }
 

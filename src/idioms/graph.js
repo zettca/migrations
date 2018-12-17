@@ -195,7 +195,7 @@ export function updateGraph() {
       .on('mouseout', tooltip.mouseout)
       .on('mousemove', tooltip.mousemove)
       .on('mouseover', d => tooltip.mouseover(
-        `<strong>${coName} (${d.year})</strong><br/>
+        `<strong>${coName}</strong> (${d.year})<br/>
         ${d3.format('~s')(d.value)} ${ms.slice(0, -4)}nts`
       ));
 
