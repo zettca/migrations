@@ -2,7 +2,7 @@ import React from 'react';
 import Select from 'react-select';
 import makeAnimated from 'react-select/lib/animated';
 
-import { selection, years } from '../helpers';
+import { selection, years } from '../util';
 
 export default class EventSelect extends React.PureComponent {
   render() {

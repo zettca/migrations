@@ -1,3 +1,4 @@
+import * as d3 from 'd3';
 import store from 'store';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -8,7 +9,7 @@ import EventSelect from './components/EventSelect';
 import CountrySelect from './components/CountrySelect';
 import MigrationSwitch from './components/MigrationSwitch';
 import { chord, graph, map } from './idioms';
-import { selection, byId, filterNaN, getMigrationDiff } from './helpers';
+import { selection, byId, filterNaN, getMigrationDiff } from './util';
 
 import './index.css';
 
@@ -41,6 +42,10 @@ function handleData(data) {
   whrData.forEach((c) => countryWHR[c.country] = filterNaN(c));
   conversion.forEach(c => codeToName[c.code3] = c.name);
   store.set('codeToName', codeToName);
+
+  d3.select('body').append('div')
+    .attr('id', 'tooltip')
+    .style('opacity', 0);
 
   map.draw('#map', topology, migrationDiff, countryPop);
   graph.draw('#graph', migrationDiff, whrData, countryPop);

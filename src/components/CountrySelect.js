@@ -3,7 +3,7 @@ import React from 'react';
 import Select from 'react-select';
 import makeAnimated from 'react-select/lib/animated';
 
-import { selection, stateEmitter } from '../helpers';
+import { selection, stateEmitter } from '../util';
 
 const codeToName = store.get('codeToName');
 
@@ -37,8 +37,6 @@ export default class CountrySelect extends React.Component {
   }
 
   render() {
-    console.log(this.state);
-
     const countryData = this.props.data;
 
     const countries = [];

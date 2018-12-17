@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import store from 'store';
 import {
   stateEmitter, createSVG, colors, countryName, parseNaN, getMigration
-} from '../helpers';
+} from '../util';
 
 export default {
   draw: drawGraph,

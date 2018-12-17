@@ -2,7 +2,7 @@ import React from 'react';
 import store from 'store';
 import Switch from 'react-switch';
 
-import { selection } from '../helpers';
+import { selection } from '../util';
 
 export default class MigrationSwitch extends React.Component {
   constructor(props) {

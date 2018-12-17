@@ -1,6 +1,6 @@
 import React from 'react';
 import Slider from 'rc-slider';
-import { stateEmitter, selection, years } from '../helpers';
+import { stateEmitter, selection, years } from '../util';
 
 import 'rc-slider/assets/index.css';
 import './YearSlider.css';

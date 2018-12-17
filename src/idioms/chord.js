@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import store from 'store';
-import { stateEmitter, createSVG, colors, countryName } from '../helpers';
+import { stateEmitter, createSVG, colors, countryName } from '../util';
 
 export default {
   draw: drawChord,

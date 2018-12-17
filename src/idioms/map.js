@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import store from 'store';
 import {
   selection, stateEmitter, createSVG, colors, countryName, getMigration
-} from '../helpers';
+} from '../util';
 
 export default {
   draw: drawMap,
@@ -16,24 +16,16 @@ stateEmitter.on('yearChanged', () => updateMap());
 stateEmitter.on('countriesChanged', () => updateMap());
 stateEmitter.on('migrationChanged', () => updateMap());
 
-function mouseIn() { }
-
-function mouseOut() { }
-
 function clickRight(d) {
   d3.event.preventDefault();
-
   selection.remCountry(d.id);
 }
 
 function clickLeft(d) {
   const forbidden = ['UNK', 'TWN', 'ATA'];
   if (forbidden.includes(d.id)) return;
-
   selection.addCountry(d.id);
 }
-
-
 
 export function drawMap(id, topology, data, population) {
   const el = document.querySelector(id);
@@ -66,8 +58,32 @@ export function drawMap(id, topology, data, population) {
     .on('click', clickLeft)
     .on('mouseover', mouseIn)
     .on('mouseout', mouseOut)
-    .on('contextmenu', clickRight)
-    .append('title').text(d => `${d.id}: ${d.properties.name}`);
+    .on('mousemove', mouseMove)
+    .on('contextmenu', clickRight);
+
+  const tooltip = d3.select('#tooltip');
+
+  function mouseIn(d, i) {
+    tooltip.transition().duration(200)
+      .style('opacity', 0.9);
+
+    tooltip
+      .html(`${d.id}: ${d.properties.name}`)
+      .style('left', d3.event.pageX + 'px')
+      .style('top', d3.event.pageY - 28 + 'px');
+  }
+
+  function mouseOut(d, i) {
+    tooltip.transition().duration(400)
+      .style('opacity', 0);
+  }
+
+  function mouseMove(d, i) {
+    tooltip
+      .html(d.id)
+      .style('left', d3.event.pageX + 'px')
+      .style('top', d3.event.pageY - 28 + 'px');
+  }
 
   function zoomed() {
     map.selectAll('path')
