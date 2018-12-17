@@ -1,16 +1,33 @@
+import store from 'store';
 import React from 'react';
 import Select from 'react-select';
 import makeAnimated from 'react-select/lib/animated';
 
+import { map } from '../idioms';
+
 export default class EventSelect extends React.PureComponent {
   render() {
-    const options = [
-      { value: "VIET", label: "Vietnam War" },
-      { value: "UKRW", label: "Ukraine War" },
-    ];
+    const { events } = this.props;
+
+    const options = [];
+
+    events.forEach((event, i) => {
+      options.push({ value: i, label: event.name });
+    });
 
     return (
       <Select
+        onChange={(selection) => {
+          const { name, year, countries } = events[selection.value];
+
+          const countriesList = countries.split(',')
+
+          console.log(year, name, countriesList);
+
+          store.set('selectedCountries', countriesList);
+          map.update();
+
+        }}
         placeholder={'Select an event...'}
         components={makeAnimated}
         onBlurResetsInput={false}

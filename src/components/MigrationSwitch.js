@@ -31,9 +31,9 @@ export default class MigrationSwitch extends React.Component {
         <Switch
           onChange={this.handleChange}
           checked={checked}
-          onColor="#FFCC80"
+          onColor="#FFAB91"
           offColor="#FFAB91"
-          onHandleColor="#FFB74D"
+          onHandleColor="#FF8A65"
           offHandleColor="#FF8A65"
           handleDiameter={24}
           uncheckedIcon={false}

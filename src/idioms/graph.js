@@ -82,9 +82,6 @@ export function updateGraph() {
 
   const flatData = Object.values(dataset).reduce((acc, d) => acc.concat(d), []);
 
-  console.log(compareData);
-  console.log(compareDataset);
-
   const axisDomain = (data, fn) => [d3.min(data, fn), d3.max(data, fn)];
 
   const yearScale = d3.scaleLinear()
@@ -100,15 +97,6 @@ export function updateGraph() {
     d3.scaleLinear()
       .domain(axisDomain(compareData, d => +d[metric])).nice()
       .range([height, 0]));
-
-  // scale for each country x metric
-  const metricsScale2 = selectedCountries.reduce((obj, country) => {
-    obj[country] = metrics.map(metric =>
-      d3.scaleLinear()
-        .domain(axisDomain(compareDataset[country], d => +d[metric])).nice()
-        .range([height, 0]));
-    return obj;
-  }, {});
 
   const xAxis = d3.axisBottom(yearScale).tickFormat(d3.format('d'));
   const yAxis1 = d3.axisLeft(migrantsScale).tickFormat(d3.format('~s'));
@@ -143,26 +131,31 @@ export function updateGraph() {
 
   const ms = store.get('isEmigration') ? 'emigration' : 'immigration';
 
+  const countriesGroup = graphSVG.append('g')
+    .attr('class', 'countries');
 
   function showMetrics(g) {
-    graphSVG.selectAll('.selected').classed('selected', false);
+    countriesGroup.attr('visibility', 'hidden');
+    g.attr('visibility', 'visible');
+    g.selectAll('.selected').classed('selected', false);
     g.selectAll('.metrics').classed('selected', true);
   }
 
   function hideMetrics(g) {
     d3.event.preventDefault();
+    countriesGroup.attr('visibility', 'visible');
+    g.attr('visibility', null);
     g.selectAll('.selected').classed('selected', false);
     g.selectAll('.metrics').attr('visibility', 'hidden');
   }
-
-  const countriesGroup = graphSVG.append('g')
-    .attr('class', 'countries');
 
   let i = 0;
   for (const country in dataset) {
     const countryData = dataset[country];
     const color = colors.selection[i++ % numColors];
     const coName = countryName(country);
+
+    if (!countryData) break;
 
     const countryGroup = countriesGroup.append('g')
       .attr('id', country)
@@ -193,6 +186,8 @@ export function updateGraph() {
 
     // correlation data
 
+    if (!compareDataset[country]) break;
+
     const metricsGroup = countryGroup.append('g')
       .attr('class', 'metrics')
       .attr('visibility', 'hidden');
@@ -203,6 +198,7 @@ export function updateGraph() {
       const line = d3.line()
         .x(d => yearScale(d.year))
         .y(d => metricsScale[i](d[met]))
+        .defined(d => d[met])
         .curve(d3.curveMonotoneX);
 
       const metricGroup = metricsGroup.append('g')
@@ -225,7 +221,7 @@ export function updateGraph() {
         .attr('class', 'circle')
         .attr('cx', d => yearScale(d.year))
         .attr('cy', d => metricsScale[i](d[met]))
-        .attr('r', 3)
+        .attr('r', d => d[met] === '' ? 0 : 3)
         .append('title').text(d => `${coName} (${d.year}): ${d[met]} ${met}`);
     });
   }

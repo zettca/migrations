@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import { tsv, json } from 'd3-fetch';
 
 import YearSlider from './components/YearSlider';
-//import EventSelect from './components/EventSelect';
+import EventSelect from './components/EventSelect';
 import CountrySelect from './components/CountrySelect';
 import MigrationSwitch from './components/MigrationSwitch';
 import { chord, graph, map } from './idioms';
@@ -25,13 +25,14 @@ const filesPromise = [
   json('./data/migrations.json'),
   tsv('./data/conversion.tsv'),
   tsv('./data/population.tsv'),
+  tsv('./data/events.tsv'),
   tsv('./data/whr2018.tsv'),
 ];
 
 Promise.all(filesPromise).then((dataResults) => handleData(dataResults));
 
 function handleData(data) {
-  const [topology, migrationData, conversion, population, whrData] = data;
+  const [topology, migrationData, conversion, population, events, whrData] = data;
 
   const migrationDiff = getMigrationDiff(migrationData);
 
@@ -49,26 +50,10 @@ function handleData(data) {
   graph.draw('#graph', migrationDiff, whrData, countryPop);
   map.draw('#map', topology, migrationDiff, countryPop);
 
-  ReactDOM.render(makeSelect(migrationDiff, codeToName), byId('countrySelect'));
-  // ReactDOM.render(<EventSelect />, byId('eventList'));
+  console.log(events);
+
+  ReactDOM.render(<CountrySelect data={migrationData} />, byId('countrySelect'));
+  ReactDOM.render(<EventSelect events={events} />, byId('eventList'));
   ReactDOM.render(<MigrationSwitch />, byId('migrationSwitch'));
   ReactDOM.render(<YearSlider />, byId('yearSlider'));
-}
-
-function makeSelect(migrationData, codeToName) {
-  function countryChange(selection) {
-    const countries = new Set(store.get('selectedCountries'));
-    selection.forEach(el => countries.add(el.value));
-    store.set('selectedCountries', Array.from(countries));
-    map.update();
-  }
-
-  const countries = [];
-  Object.keys(migrationData[2000]).forEach(key => {
-    if (key.length !== 3) return;
-    countries.push({ value: key, label: codeToName[key] });
-  });
-
-  return (<CountrySelect countries={countries} onChange={countryChange} />
-  );
 }

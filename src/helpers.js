@@ -9,7 +9,7 @@ export const numColors = 9;
 
 export const colors = {
   map: d3.schemeBlues[numColors],
-  selection: d3.schemeRdYlGn[numColors],
+  selection: d3.schemePaired.slice(2),
 };
 
 export function getMigration(dataYear, country) {
