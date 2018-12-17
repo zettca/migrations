@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import store from 'store';
 import {
-  selection, stateEmitter, createSVG, colors, countryName, getMigration
+  tooltip, selection, stateEmitter, createSVG, colors, countryName, getMigration
 } from '../util';
 
 export default {
@@ -48,6 +48,7 @@ export function drawMap(id, topology, data, population) {
   mapSVG.call(zoom);
 
   const map = mapSVG.append('g').attr('class', 'countries');
+
   map
     .selectAll('path')
     .data(topology.features)
@@ -56,34 +57,10 @@ export function drawMap(id, topology, data, population) {
     .attr('name', (d) => d.properties.name)
     .attr('d', path)
     .on('click', clickLeft)
-    .on('mouseover', mouseIn)
-    .on('mouseout', mouseOut)
-    .on('mousemove', mouseMove)
-    .on('contextmenu', clickRight);
-
-  const tooltip = d3.select('#tooltip');
-
-  function mouseIn(d, i) {
-    tooltip.transition().duration(200)
-      .style('opacity', 0.9);
-
-    tooltip
-      .html(`${d.id}: ${d.properties.name}`)
-      .style('left', d3.event.pageX + 'px')
-      .style('top', d3.event.pageY - 28 + 'px');
-  }
-
-  function mouseOut(d, i) {
-    tooltip.transition().duration(400)
-      .style('opacity', 0);
-  }
-
-  function mouseMove(d, i) {
-    tooltip
-      .html(d.id)
-      .style('left', d3.event.pageX + 'px')
-      .style('top', d3.event.pageY - 28 + 'px');
-  }
+    .on('contextmenu', clickRight)
+    .on('mouseover', tooltip.mouseover)
+    .on('mouseout', tooltip.mouseout)
+    .on('mousemove', tooltip.mousemove);
 
   function zoomed() {
     map.selectAll('path')
@@ -115,9 +92,11 @@ export function updateMap() {
   mapSVG.selectAll('path')
     // .transition().duration(600)
     .style('fill', (d) => color(getMigrants(d)))
-    .select('title').text(d =>
-      `${countryName(d.id)}: ${d3.format('.1f')(getMigrants(d))}/1000 population`
-    );
+    .on('mouseover', (d) => tooltip.mouseover(
+      `<strong>${countryName(d.id)}</strong><br/>
+      ${d3.format('.1f')(getMigrants(d))} migrants in ${year}<br/>
+      <small>/1000 population</small>`
+    ));
 
   d3.selectAll('.selected').classed('selected', false);
   selectedCountries.forEach((countryID, i) => {

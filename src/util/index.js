@@ -1,12 +1,19 @@
 import * as d3 from 'd3';
 import store from 'store';
-import EventEmitter from 'events';
 
-class SelectionEmitter extends EventEmitter { }
+import tooltip from './tooltip';
+import { emitter, state } from './state';
 
-export const stateEmitter = new SelectionEmitter();
+const years = [1995, 2000, 2005, 2010, 2015, 2017];
+const stateEmitter = emitter;
+const selection = state;
 
-export const years = [1995, 2000, 2005, 2010, 2015, 2017];
+export {
+  years,
+  stateEmitter,
+  selection,
+  tooltip,
+};
 
 export function tryNumber(value) {
   return Number(value) || value;
@@ -16,52 +23,6 @@ export const colors = {
   map: d3.schemeBlues[9],
   selection: d3.schemePaired.slice(2),
 };
-
-export const selection = {
-  getCountries, setCountries, clearCountries,
-  addCountry, remCountry,
-  getYear: () => store.get('year'),
-  setYear,
-  getMigration: () => store.get('isEmigration'),
-  setMigration,
-};
-
-function setYear(value) {
-  store.set('year', value);
-  stateEmitter.emit('yearChanged');
-}
-
-function setMigration(value) {
-  store.set('isEmigration', value);
-  stateEmitter.emit('migrationChanged');
-}
-
-function getCountries() {
-  return store.get('selectedCountries');
-}
-
-function setCountries(countries) {
-  store.set('selectedCountries', Array.from(countries));
-  stateEmitter.emit('countriesChanged');
-}
-
-function clearCountries() {
-  setCountries([]);
-}
-
-function addCountry(countryId) {
-  const countries = new Set(getCountries());
-  countries.add(countryId);
-  setCountries(countries);
-}
-
-function remCountry(countryId) {
-  const countries = new Set(getCountries());
-  countries.delete(countryId);
-  setCountries(countries);
-}
-
-
 
 export function getMigration(dataYear, country) {
   const isEmigration = store.get('isEmigration');

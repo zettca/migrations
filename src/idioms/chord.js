@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import store from 'store';
-import { stateEmitter, createSVG, colors, countryName } from '../util';
+import { selection, stateEmitter, createSVG, colors, countryName, tooltip } from '../util';
 
 export default {
   draw: drawChord,
@@ -9,7 +9,6 @@ export default {
 
 let chordSVG;
 let countries, migrationData;
-
 let outerRadius, innerRadius;
 
 stateEmitter.on('yearChanged', () => updateChord());
@@ -17,11 +16,11 @@ stateEmitter.on('countriesChanged', () => updateChord());
 stateEmitter.on('migrationChanged', () => updateChord());
 
 function getChordMatrix() {
-  countries = store.get('selectedCountries');
+  countries = selection.getCountries();
   //countries = Object.keys(migrationData[2010]['WORLD']).slice(200, 230);
 
-  const isEmigration = store.get('isEmigration');
-  const year = store.get('year') || 2010;
+  const isEmigration = selection.getMigration();
+  const year = selection.getYear();
   const matrix = [];
 
   function getValue(c, c2) {
@@ -82,6 +81,9 @@ export function updateChord() {
 
   if (chords.length === 0) return;
 
+  const isEmi = selection.getMigration();
+  const ms = isEmi ? 'emigration' : 'immigration';
+
   groupNodes.selectAll('g')
     .data(chords.groups)
     .enter().append('g')
@@ -90,26 +92,26 @@ export function updateChord() {
     .attr('fill', (d, i) => color(i))
     .attr('stroke', (d, i) => color(i))
     .attr('d', arc)
-    .on('mouseover', mouseover)
+    .on('mousemove', tooltip.mousemove)
     .on('mouseout', mouseout)
-    .append('title').text(d => `${countryName(countries[d.index])}: ${d3.format('~s')(d.value)}`);
+    .on('mouseover', mouseover);
 
   groupArcs.selectAll('path')
     .data(chords)
     .enter().append('path')
     .attr('class', 'arc')
-    .attr('d', ribbon)
     .attr('fill', d => color(d.target.index))
-    // .attr('stroke', d => d3.rgb(color(d.target.index)).darker())
-    .append('title').text(d => makeTitle(d));
+    .attr('d', ribbon)
+    .on('mouseover', d => tooltip.mouseover(makeTitle(d)))
+    .on('mouseout', tooltip.mouseout)
+    .on('mousemove', tooltip.mousemove);
 
   function makeTitle(d) {
-    const isEmigration = store.get('isEmigration');
-    const countryOrder = isEmigration ? [d.source, d.target] : [d.target, d.source];
+    const countryOrder = isEmi ? [d.source, d.target] : [d.target, d.source];
     const valueOrder = [d.source, d.target];
     const [c1, c2] = countryOrder.map(el => countryName(countries[el.index]));
     const [v1, v2] = valueOrder.map(el => d3.format('~s')(el.value));
-    return `${c1} > ${c2}: ${v1}\n${c2} > ${c1}: ${v2}`;
+    return `${c1} ⟶ ${c2}: ${v1}<br/>${c2} ⟶ ${c1}: ${v2}`;
   }
 
   function mouseover(d, i) {
@@ -117,11 +119,18 @@ export function updateChord() {
     const s = groupArcs.selectAll('.arc');
     s.classed('fade', (p) => p.source.index !== i && p.target.index !== i);
     s.classed('show', (p) => p.source.index === i);
+
+    tooltip.mouseover(
+      `<strong>${countryName(countries[d.index])}</strong><br/>
+      ${d3.format('~s')(d.value)} ${ms.slice(0, -4)}nts<br/>
+      <small>in ${selection.getYear()}</small>`
+    );
   }
 
   function mouseout(d, i) {
     groupArcs.selectAll('.arc.show').classed('show', false);
     groupArcs.selectAll('.arc.fade').classed('fade', false);
+    tooltip.mouseout();
   }
 
 }

@@ -1,6 +1,7 @@
 body {
   margin: 0;
   padding: 0;
+  overflow: hidden;
   font-family: "Roboto", "Cantarell", "Droid Sans", "Helvetica Neue", sans-serif;
   color: white;
   background-color: #212121;
@@ -70,17 +71,4 @@ nav {
 
 .idiom:nth-child(2) {
   width: 70%;
-}
-
-#tooltip {
-  color: white;
-  position: absolute;
-  text-align: center;
-  width: 60px;
-  height: 28px;
-  padding: 2px;
-  font: 12px sans-serif;
-  background: rgba(0, 0, 0, .8);
-  border: 2px solid black;
-  pointer-events: none;
 }

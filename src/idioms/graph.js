@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import store from 'store';
 import {
-  stateEmitter, createSVG, colors, countryName, parseNaN, getMigration
+  stateEmitter, createSVG, colors, countryName, parseNaN, getMigration, tooltip
 } from '../util';
 
 export default {
@@ -174,9 +174,14 @@ export function updateGraph() {
       .attr('d', line)
       .on('click', () => showMetrics(countryGroup))
       .on('contextmenu', () => hideMetrics(countryGroup))
-      .on('mouseenter', () => countryGroup.selectAll('.metrics').attr('visibility', 'visible'))
-      .on('mouseout', () => countryGroup.selectAll('.metrics').attr('visibility', 'hidden'))
-      .append('title').text(() => `${coName} ${ms} line`);
+      .on('mousemove', tooltip.mousemove)
+      .on('mouseover', d => {
+        countryGroup.selectAll('.metrics').attr('visibility', 'visible');
+        tooltip.mouseover(`${coName} ${ms}`);
+      })
+      .on('mouseout', d => {
+        countryGroup.selectAll('.metrics').attr('visibility', 'hidden');
+      });
 
     countryGroup.append('g')    // line dots
       .attr('class', 'dots')
@@ -187,9 +192,15 @@ export function updateGraph() {
       .attr('cx', (d) => yearScale(d.year))
       .attr('cy', (d) => migrantsScale(d.value))
       .attr('r', 3)
-      .append('title').text(d => `${coName} (${d.year}): ${d3.format('~s')(d.value)}`);
+      .on('mouseout', tooltip.mouseout)
+      .on('mousemove', tooltip.mousemove)
+      .on('mouseover', d => tooltip.mouseover(
+        `<strong>${coName} (${d.year})</strong><br/>
+        ${d3.format('~s')(d.value)} ${ms.slice(0, -4)}nts`
+      ));
 
     // correlation data
+
 
     if (!compareDataset[country]) break;
 
@@ -215,7 +226,9 @@ export function updateGraph() {
         .attr('fill', 'none')
         .attr('opacity', 0.8)
         .attr('d', line)
-        .append('title').text(() => met);
+        .on('mouseout', tooltip.mouseout)
+        .on('mousemove', tooltip.mousemove)
+        .on('mouseover', d => tooltip.mouseover(`<strong>${coName}:</strong> ${met}`));
 
       metricGroup.append('g')    // correlation circles
         .attr('fill', color)
@@ -227,7 +240,12 @@ export function updateGraph() {
         .attr('cx', d => yearScale(d.year))
         .attr('cy', d => metricsScale[i](d[met]))
         .attr('r', d => d[met] === '' ? 0 : 3)
-        .append('title').text(d => `${coName} (${d.year}): ${d[met]} ${met}`);
+        .on('mouseout', tooltip.mouseout)
+        .on('mousemove', tooltip.mousemove)
+        .on('mouseover', d => tooltip.mouseover(
+          `<strong>${coName}</strong> (${d.year})<br/>
+          <small>${met}</small><br/>
+          ${d[met]}`));
     });
   }
 }
